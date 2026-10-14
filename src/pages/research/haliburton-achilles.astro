@@ -1,0 +1,472 @@
+---
+const sources = [
+  {
+    name: "NBA.com: Indiana Pacers 2026–27 Preview",
+    url: "https://www.nba.com/news/2026-27-season-preview-ind"
+  },
+  {
+    name: "CBS Sports: Haliburton's 2024–25 statistics",
+    url: "https://www.cbssports.com/nba/players/3041074/tyrese-haliburton/fantasy/"
+  }
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#10110f" />
+    <meta
+      name="description"
+      content="Can NBA history tell us what comes next for Tyrese Haliburton after a torn Achilles? An Anticipate investigation."
+    />
+    <title>Tyrese Haliburton: A Career-Ending Injury or a Career-Defining One? — Anticipate</title>
+    <style>
+      :root {
+        font-family: Arial, Helvetica, sans-serif;
+        color: #f3f2eb;
+        background: #10110f;
+        --bg: #10110f;
+        --panel: #191a17;
+        --muted: #999b91;
+        --line: #30312b;
+        --lime: #d4ff45;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; }
+      a { color: inherit; text-decoration: none; }
+      .shell { width: min(1000px, calc(100% - 48px)); margin: auto; }
+
+      header {
+        height: 82px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        font-size: 23px;
+        font-weight: 900;
+        letter-spacing: -1.2px;
+      }
+
+      .brand span { color: var(--lime); }
+      .back { font-size: 12px; color: #c2c3ba; }
+      .back:hover { color: var(--lime); }
+
+      .eyebrow {
+        color: var(--lime);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+
+      .article-hero { padding: 78px 0 42px; }
+
+      h1 {
+        max-width: 900px;
+        margin: 22px 0;
+        font-size: clamp(42px, 7vw, 78px);
+        line-height: .99;
+        letter-spacing: -4px;
+      }
+
+      h1 em { color: var(--lime); font-style: normal; }
+
+      .dek {
+        max-width: 680px;
+        color: #b1b2a9;
+        font-size: 17px;
+        line-height: 1.8;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 28px;
+        padding: 18px 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 10px;
+        letter-spacing: 1px;
+      }
+
+      .hero-image {
+        margin: 32px 0 0;
+      }
+
+      .hero-image img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        object-position: center;
+        border: 1px solid #35372c;
+        border-radius: 3px;
+      }
+
+      .hero-image figcaption {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.6;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: minmax(0, 660px) minmax(170px, 1fr);
+        gap: 55px;
+        padding: 45px 0 80px;
+        align-items: start;
+      }
+
+      .prose { font-size: 15px; line-height: 1.95; color: #d0d0c8; }
+      .prose p { margin: 0 0 24px; }
+
+      .opening {
+        color: #f3f2eb;
+        font-size: 25px;
+        line-height: 1.4;
+        letter-spacing: -.5px;
+      }
+
+      .opening em { color: var(--lime); font-style: normal; }
+
+      h2 {
+        color: #f3f2eb;
+        font-size: 29px;
+        letter-spacing: -1px;
+        line-height: 1.15;
+        margin: 46px 0 18px;
+      }
+
+      h3 {
+        color: #f3f2eb;
+        font-size: 16px;
+        margin: 0 0 10px;
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 30px 0;
+      }
+
+      .stat {
+        background: var(--panel);
+        border: 1px solid #292a25;
+        padding: 18px 14px;
+      }
+
+      .stat strong {
+        display: block;
+        color: var(--lime);
+        font-size: 27px;
+        letter-spacing: -1px;
+      }
+
+      .stat span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .callout {
+        padding: 22px;
+        background: var(--panel);
+        border-left: 3px solid var(--lime);
+        margin: 30px 0;
+      }
+
+      .callout p { margin: 0; }
+
+      .sidebar {
+        position: sticky;
+        top: 24px;
+        padding-top: 5px;
+      }
+
+      .side-card {
+        border-top: 1px solid var(--line);
+        padding: 18px 0;
+      }
+
+      .side-card p, .side-card a {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.8;
+      }
+
+      .side-card a {
+        display: block;
+        margin-top: 10px;
+        text-decoration: underline;
+        text-decoration-color: #515249;
+        text-underline-offset: 3px;
+      }
+
+      .side-card a:hover { color: var(--lime); }
+
+      .method {
+        background: #191a17;
+        border: 1px solid #30312b;
+        padding: 24px;
+        margin-top: 30px;
+      }
+
+      .method p { font-size: 13px; }
+
+      .status {
+        display: inline-block;
+        color: var(--lime);
+        font-size: 9px;
+        font-weight: bold;
+        letter-spacing: 1.5px;
+        margin-bottom: 12px;
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        border-top: 1px solid var(--line);
+        padding: 28px 0;
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      @media (max-width: 720px) {
+        .shell { width: calc(100% - 32px); }
+        .article-hero { padding-top: 52px; }
+        h1 { letter-spacing: -2px; }
+        .content { grid-template-columns: 1fr; gap: 25px; }
+        .sidebar { position: static; }
+        .stat-grid { grid-template-columns: 1fr 1fr 1fr; }
+        .stat { padding: 13px 9px; }
+        .stat strong { font-size: 23px; }
+        footer { flex-direction: column; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="shell">
+      <header>
+        <a class="brand" href="/">anticipate<span>.</span></a>
+        <a class="back" href="/">← BACK TO HOME</a>
+      </header>
+
+      <main>
+        <section class="article-hero">
+          <div class="eyebrow">ANTICIPATE ORIGINAL RESEARCH / PLAYER PROJECTION</div>
+
+          <h1>
+<h1>Tyrese Haliburton: A Career-Ending Injury? Or a <em>Career-Defining One?</em></h1>
+          </h1>
+
+          <p class="dek">
+            The Achilles has long been treated as a turning point in an athlete's career.
+            But what does NBA history actually tell us about what comes after?
+          </p>
+
+          <div class="meta">
+            <span>NBA ANALYTICS</span>
+            <span>2026–27 SEASON</span>
+            <span>DATA-DRIVEN INVESTIGATION</span>
+          </div>
+
+          <figure class="hero-image">
+            <img
+              src="https://images.assettype.com/tribune/2025-06-23/dosvozbv/0-02-06-0c75b444bcd99a2496a22a001bbb3212dd96418968c09ed0ad3ec66215837d6c2724db3388f0a04c.jpg?w=1200&auto=format"
+              alt="Tyrese Haliburton during the 2025 NBA Finals"
+              fetchpriority="high"
+            />
+            <figcaption>
+              Tyrese Haliburton's Achilles injury became one of the defining storylines of the 2025 NBA Finals.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="content">
+          <article class="prose">
+            <p class="opening">
+              What if the Achilles heel wasn't the crippling weakness <em>the Iliad</em> made it out to be?
+            </p>
+
+            <p>
+              In Greek mythology, Achilles was nearly invincible, brought down by
+              the one vulnerability his legend could not erase. In basketball,
+              an Achilles tendon tear can feel like a similar dividing line:
+              the career before the injury, and the uncertain one that follows.
+            </p>
+
+            <p>
+              Tyrese Haliburton knows that uncertainty. In Game 7 of the 2025 NBA
+              Finals, he tore his right Achilles tendon. Indiana lost its floor
+              general for the entire 2025–26 season, and one of the league's most
+              creative passers faced a question no highlight reel could answer:
+              what would he be when he returned?
+            </p>
+
+            <p>
+              The question is not simply whether Haliburton can play again.
+              It is whether the player who returns can reproduce the production,
+              movement, and influence that made him one of the NBA's elite
+              playmakers.
+            </p>
+
+            <h2>Before the injury</h2>
+
+            <p>
+              Haliburton's 2024–25 regular season provides the baseline for
+              understanding what he is trying to regain. He averaged 18.6 points
+              and 9.2 assists per game, while shooting 38.8% from three-point
+              range. Those numbers describe more than a scorer. They describe a
+              guard whose value depends on creating efficient opportunities for
+              himself and for teammates.
+            </p>
+
+            <div class="stat-grid">
+              <div class="stat">
+                <strong>18.6</strong>
+                <span>POINTS PER GAME<br />2024–25</span>
+              </div>
+              <div class="stat">
+                <strong>9.2</strong>
+                <span>ASSISTS PER GAME<br />2024–25</span>
+              </div>
+              <div class="stat">
+                <strong>38.8%</strong>
+                <span>THREE-POINT SHOOTING<br />2024–25</span>
+              </div>
+            </div>
+
+            <p>
+              These are the benchmarks, not the prediction. A meaningful
+              projection must consider the possibility of fewer minutes,
+              changes in efficiency, a gradual return to workload, and the
+              difference between being medically cleared and performing at
+              a previous level.
+            </p>
+
+            <h2>What can NBA history tell us?</h2>
+
+            <p>
+              A single comeback story cannot tell us what Haliburton's future
+              will look like. To look for a more useful answer, we need to
+              examine NBA players who returned after Achilles tendon injuries
+              and measure how their performance changed.
+            </p>
+
+            <p>
+              The comparison needs to go beyond points per game. Minutes,
+              games played, scoring efficiency, assists, rebounds and
+              availability can tell different stories. A player may score less
+              because he plays fewer minutes, for example, rather than because
+              his performance per minute has changed.
+            </p>
+
+            <div class="callout">
+              <p>
+                <strong>THE CENTRAL QUESTION</strong><br />
+                How much of a player's pre-injury production tends to return,
+                and how closely does that historical pattern fit a guard whose
+                game depends on playmaking and shooting?
+              </p>
+            </div>
+
+            <h2>From historical evidence to a projection</h2>
+
+            <p>
+              The next step is to turn the historical sample into a transparent
+              projection for Haliburton. The comparison group, seasons included,
+              minimum playing-time rules, and treatment of incomplete return
+              seasons all need to be documented before interpreting the result.
+            </p>
+
+            <p>
+              The model should estimate more than one possible outcome. A
+              conservative scenario, a central estimate, and an optimistic
+              scenario would show how sensitive the forecast is to assumptions
+              about playing time and recovery.
+            </p>
+
+            <div class="method">
+              <span class="status">RESEARCH NOTE</span>
+              <h3>The projection is not the conclusion yet.</h3>
+              <p>
+                Historical comparisons and model results need to be verified
+                before numerical forecasts are published. This article will
+                report the sample, assumptions, validation error, and
+                limitations alongside the final projection.
+              </p>
+            </div>
+
+            <h2>A comeback is not a guarantee</h2>
+
+            <p>
+              The purpose of this analysis is not to declare Haliburton
+              finished, nor to promise that he will return unchanged. Historical
+              data can help us estimate plausible outcomes, but it cannot
+              account for every detail of an individual athlete's recovery,
+              role, or future circumstances.
+            </p>
+
+            <p>
+              The more useful question is not whether the Achilles is a career
+              ending injury in every case. It is what the evidence says about
+              the range of careers that can follow it, and where Haliburton
+              might fall within that range.
+            </p>
+
+            <p>
+              Because in basketball, as in mythology, the weakness that defines
+              a story is not always the ending.
+            </p>
+          </article>
+
+          <aside class="sidebar">
+            <div class="side-card">
+              <div class="eyebrow">THE QUESTION</div>
+              <p>What can past NBA Achilles recoveries tell us about Haliburton's next season?</p>
+            </div>
+
+            <div class="side-card">
+              <div class="eyebrow">WHAT WE MEASURE</div>
+              <p>Scoring, assists, minutes, efficiency, availability, and changes from pre-injury production.</p>
+            </div>
+
+            <div class="side-card">
+              <div class="eyebrow">SOURCES</div>
+              {sources.map((source) => (
+                <a href={source.url} target="_blank" rel="noopener noreferrer">
+                  {source.name} ↗
+                </a>
+              ))}
+            </div>
+
+            <div class="side-card">
+              <div class="eyebrow">OUR STANDARD</div>
+              <p>Show the evidence. Explain the assumptions. Be honest about uncertainty.</p>
+            </div>
+          </aside>
+        </section>
+      </main>
+
+      <footer>
+        <a class="brand" href="/">anticipate<span>.</span></a>
+        <span>BASKETBALL, THROUGH DATA.</span>
+        <span>THE FUTURE LEAVES CLUES.</span>
+      </footer>
+    </div>
+  </body>
+</html>
