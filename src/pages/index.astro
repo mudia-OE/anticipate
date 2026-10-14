@@ -265,7 +265,8 @@ const stories = [
         color: var(--lime);
       }
 
-      .stories {
+      .featured-story { display:block; padding:36px; margin-bottom:20px; background:linear-gradient(125deg,#242b19,#191a17); border:1px solid #485334; text-decoration:none; transition:border-color .2s; } .featured-story:hover{border-color:var(--lime)} .featured-story h3{font-size:clamp(30px,4vw,47px);letter-spacing:-1.5px;line-height:1.08;max-width:780px;margin:20px 0 15px}.featured-story h3 span,.featured-story strong{color:var(--lime)}.featured-story p{font-size:14px;color:#b7b9ae;line-height:1.7;max-width:620px}.featured-story strong{display:block;margin-top:25px;font-size:11px;letter-spacing:1px}
+    .stories {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 14px;
@@ -450,7 +451,7 @@ const stories = [
             <a class="section-link" href="#research">ALL RESEARCH ↗</a>
           </div>
 
-          <div class="stories">
+          <a href="/research/haliburton-achilles/" class="featured-story"><div class="eyebrow">FEATURED INVESTIGATION / THE MODEL ROOM</div><h3>Tyrese Haliburton: A Career-Ending Injury? Or a <span>Career-Defining One?</span></h3><p>24 NBA Achilles recoveries. One model. What the numbers suggest about Haliburton’s return.</p><strong>READ THE INVESTIGATION ↗</strong></a><div class="stories">
             {stories.map((story) => (
               <article class="story">
                 <div class="story-top">
