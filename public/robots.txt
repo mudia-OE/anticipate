@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://anticipate-peak.vercel.app/sitemap-index.xml
