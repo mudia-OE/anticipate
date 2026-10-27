@@ -18,9 +18,10 @@ const stories = [
   {
     category: "PLAYER COMPARISONS",
     number: "03",
-    title: "Which Current Stars Match the All-Time Greats?",
-    description: "Matching ten all-time NBA greats with their closest statistical counterparts from the 2025–26 season.",
-    type: "DATA DIVE"
+    title: "We Looked for the Next John Stockton. The Numbers Had Other Ideas.",
+    description: "NBA Time Machine starts with an unexpected match, five interactive player comparisons and a playmaking record that still stands out.",
+    type: "NBA TIME MACHINE",
+    href: "/research/stockton-time-machine/"
   }
 ];
 ---
@@ -395,6 +396,13 @@ const stories = [
         footer { flex-direction: column; }
       }
     @media(max-width:520px){.shell{width:calc(100% - 28px)}.hero{gap:24px}h1{letter-spacing:-3px;overflow-wrap:anywhere}nav{flex-wrap:wrap;justify-content:flex-end;gap:10px}.ticker{grid-template-columns:1fr}.ticker-item{border-right:0;border-bottom:1px solid var(--line)}.feature-visual{min-height:260px}}
+.story-read{color:var(--lime);font-weight:800;text-decoration:none}.story-read:hover{text-decoration:underline}
+      .series-spotlight{margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:27px 31px;background:linear-gradient(110deg,#232b1e,#1b221b 66%,#172622);border:1px solid #485a3b;text-decoration:none;transition:border-color .2s}
+      .series-spotlight:hover{border-color:var(--lime)}.series-spotlight .spot-brow{font-size:10px;letter-spacing:1.6px;color:var(--lime);font-weight:800}
+      .series-spotlight h3{font-size:clamp(22px,3.5vw,35px);line-height:1.16;letter-spacing:-1px;margin:13px 0;max-width:720px}.series-spotlight p{font-size:13px;line-height:1.65;color:#bfc7b6;margin:0;max-width:620px}
+      .series-spotlight .spot-number{font-size:clamp(56px,8vw,92px);color:var(--lime);font-weight:900;letter-spacing:-6px;white-space:nowrap}
+      .series-spotlight .spot-cta{font-size:11px;letter-spacing:1px;color:var(--lime);font-weight:800;display:inline-block;margin-top:16px}
+      @media(max-width:760px){.series-spotlight{grid-template-columns:1fr;padding:22px}.series-spotlight .spot-number{display:none}}
 </style>
   </head>
   <body>
@@ -467,7 +475,12 @@ const stories = [
             <a class="section-link" href="#research">ALL RESEARCH ↗</a>
           </div>
 
-          <a href="/research/haliburton-achilles/" class="featured-story"><div class="eyebrow">FEATURED INVESTIGATION / THE MODEL ROOM</div><h3>Tyrese Haliburton: A Career-Ending Injury? Or a <span>Career-Defining One?</span></h3><p>24 NBA Achilles recoveries. One model. What the numbers suggest about Haliburton’s return.</p><strong>READ THE INVESTIGATION ↗</strong></a><div class="stories">
+          <a href="/research/haliburton-achilles/" class="featured-story"><div class="eyebrow">FEATURED INVESTIGATION / THE MODEL ROOM</div><h3>Tyrese Haliburton: A Career-Ending Injury? Or a <span>Career-Defining One?</span></h3><p>24 NBA Achilles recoveries. One model. What the numbers suggest about Haliburton’s return.</p><strong>READ THE INVESTIGATION ↗</strong></a>
+          <a href="/research/stockton-time-machine/" class="series-spotlight" aria-label="Read NBA Time Machine episode one on John Stockton">
+            <div><div class="spot-brow">NEW SERIES / NBA TIME MACHINE / EPISODE 01</div><h3>We looked for the next John Stockton. <span style="color:var(--lime)">The numbers had other ideas.</span></h3><p>279 players, five surprising contenders and interactive radar charts. Make your own comparison.</p><span class="spot-cta">EXPLORE EPISODE 01 ↗</span></div>
+            <div class="spot-number" aria-hidden="true">57.4%</div>
+          </a>
+          <div class="stories">
             {stories.map((story) => (
               <article class="story">
                 <div class="story-top">
@@ -478,7 +491,7 @@ const stories = [
                 <p>{story.description}</p>
                 <div class="story-bottom">
                   <span>{story.type}</span>
-                  <span>COMING INTO FOCUS ↗</span>
+                  {story.href ? <a class="story-read" href={story.href}>READ EPISODE 01 ↗</a> : <span>COMING INTO FOCUS ↗</span>}
                 </div>
               </article>
             ))}
