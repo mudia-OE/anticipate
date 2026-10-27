@@ -1,0 +1,104 @@
+---
+import { nbaTimeMachineEpisodes } from "../../data/nbaTimeMachineSeries.js";
+const url = "https://anticipate-peak.vercel.app/series/nba-time-machine/";
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#10110f" />
+  <title>NBA Time Machine: The Series | Anticipate</title>
+  <meta name="description" content="Ten NBA legends, one modern season. Explore Anticipate's NBA Time Machine, starting with John Stockton, and browse the next nine episodes." />
+  <link rel="canonical" href={url} />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Anticipate" />
+  <meta property="og:title" content="NBA Time Machine: The Series | Anticipate" />
+  <meta property="og:description" content="Ten legends, ten investigations, and 279 modern players to compare. Start with John Stockton." />
+  <meta property="og:url" content={url} />
+  <meta name="twitter:card" content="summary" />
+  <style>
+    :root {font-family:Arial,Helvetica,sans-serif;background:#10110f;color:#f3f2eb;--bg:#10110f;--lime:#d4ff45;--panel:#1a1c18;--line:#35372f;--muted:#a8ab9f}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0}a{color:inherit;text-decoration:none}a:focus-visible{outline:3px solid var(--lime);outline-offset:3px}a:hover{color:var(--lime)}
+    .shell{width:min(1140px,calc(100% - 44px));margin:0 auto}
+    header{height:82px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{font-weight:900;font-size:24px;letter-spacing:-1.3px}.brand span{color:var(--lime)}
+    nav{display:flex;align-items:center;gap:25px;font-size:12px;color:#c4c8be}
+    .eyebrow{color:var(--lime);font-size:10px;font-weight:800;letter-spacing:2px}
+    .hero{padding:85px 0 56px;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:48px;align-items:center}
+    h1{font-size:clamp(54px,8vw,96px);line-height:.94;letter-spacing:-6px;margin:19px 0 30px}h1 span{color:var(--lime)}
+    .dek{font-size:17px;line-height:1.8;color:#c5c6bd;max-width:610px}
+    .meta{display:flex;gap:16px 25px;flex-wrap:wrap;color:#9fa59a;font-size:11px;letter-spacing:1px;margin-top:32px}.meta strong{color:#e8e9df}
+    .emblem{height:325px;border:1px solid #4c5930;background:radial-gradient(circle at 55% 45%,#3d4828 0%,transparent 48%),linear-gradient(140deg,#222c1c,#131713);padding:25px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+    .emblem:before{content:"";position:absolute;width:280px;height:280px;border:1px solid #738453;border-radius:50%;right:-100px;top:45px;opacity:.55}
+    .emblem strong{position:relative;z-index:1;font-size:112px;letter-spacing:-12px;color:var(--lime);line-height:.9}
+    .emblem small{position:relative;z-index:1;font-size:10px;letter-spacing:1.6px;color:#bccba9}
+    .divider{height:1px;background:var(--line)}
+    .section-head{display:flex;justify-content:space-between;align-items:end;gap:24px;margin:57px 0 25px}
+    .section-head h2{font-size:clamp(31px,4vw,44px);letter-spacing:-1.7px;margin:12px 0 0}
+    .section-head p{max-width:460px;color:#aeb4a9;font-size:13px;line-height:1.8;margin:0}
+    .current{display:grid;grid-template-columns:130px minmax(0,1fr) auto;gap:29px;align-items:center;border:1px solid #768a42;background:linear-gradient(110deg,#303b20,#1d241b 70%);padding:31px;margin-bottom:17px}
+    .current:hover{color:inherit;border-color:var(--lime);background:linear-gradient(110deg,#354725,#202a1c 70%)}
+    .current .big-no{font-size:94px;letter-spacing:-7px;line-height:.95;color:var(--lime);font-weight:900}
+    .current h3{font-size:clamp(31px,4vw,45px);letter-spacing:-1.4px;line-height:1.1;margin:13px 0}
+    .current p{font-size:13px;color:#bac8b1;line-height:1.7;margin:0;max-width:640px}
+    .state{display:inline-block;font-weight:800;letter-spacing:1.2px;font-size:10px;padding:8px 11px;border:1px solid #768b4d;color:var(--lime)}
+    .current .go{font-size:11px;font-weight:800;white-space:nowrap;color:var(--lime);letter-spacing:1px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+    .card{position:relative;min-height:188px;padding:23px;background:var(--panel);border:1px solid #30342d;display:flex;flex-direction:column;justify-content:space-between;opacity:.83}
+    .card .top{display:flex;align-items:center;justify-content:space-between;gap:10px}.card .num{color:#a7ae9b;font-size:11px;letter-spacing:1.5px;font-weight:800}
+    .card .lock{color:#aaaead;font-size:10px;letter-spacing:1.1px;border:1px solid #484a42;border-radius:20px;padding:7px 10px}
+    .card h3{margin:20px 0 8px;font-size:25px;letter-spacing:-.9px;line-height:1.15}
+    .card p{margin:0;color:#a1a49b;font-size:12px}.card .bottom{border-top:1px solid #33382f;padding-top:13px;margin-top:25px;color:#959c8e;font-size:10px;letter-spacing:1px}
+    .note{margin:50px 0 85px;border-top:1px solid var(--line);padding-top:25px;display:grid;grid-template-columns:1fr 1fr;gap:26px}
+    .note h2{font-size:23px;letter-spacing:-.8px;margin:0 0 13px}.note p{font-size:13px;color:#b5b9af;line-height:1.8;margin:0}
+    footer{border-top:1px solid var(--line);padding:30px 0 50px;display:flex;justify-content:space-between;gap:20px;align-items:center;color:#a4a99f;font-size:11px}
+    @media(max-width:840px){.hero{grid-template-columns:1fr}.emblem{height:220px}.emblem strong{font-size:90px}.current{grid-template-columns:100px minmax(0,1fr)}.current .go{grid-column:2}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:600px){.shell{width:calc(100% - 28px)}header{height:70px}nav{gap:12px;font-size:11px}.hero{padding:58px 0 40px;gap:26px}h1{font-size:59px;letter-spacing:-4px}.section-head{display:block;margin-top:42px}.section-head p{margin-top:14px}.current{grid-template-columns:1fr;padding:25px;gap:12px}.current .big-no{font-size:62px}.current .go{grid-column:1}.grid{grid-template-columns:1fr}.card{min-height:155px}.note{grid-template-columns:1fr}.emblem{height:190px}footer{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header><a href="/" class="brand">anticipate<span>.</span></a><nav aria-label="Main navigation"><a href="/#research">Research</a><a href="/#series" aria-current="page">Series</a><a href="/">Home</a></nav></header>
+  <main>
+    <section class="hero">
+      <div>
+        <div class="eyebrow">ANTICIPATE ORIGINAL SERIES / SEASON ONE</div>
+        <h1>NBA Time<br /><span>Machine.</span></h1>
+        <p class="dek">You know what made the legends great. But what would their games look like now? We took ten all-time names, picked one defining season for each and searched the 2025–26 NBA for the closest measurable match.</p>
+        <p class="dek">Same game. Different eras. Sometimes the closest match tells you more about what makes a legend impossible to copy.</p>
+        <div class="meta"><span><strong>10</strong> EPISODES</span><span><strong>279</strong> MODERN PLAYERS</span><span><strong>1</strong> CURRENTLY AVAILABLE</span></div>
+      </div>
+      <div class="emblem" role="img" aria-label="NBA Time Machine emblem, ten episodes">
+        <small>ANTICIPATE / HISTORICAL COMPARISONS</small><strong>10.</strong><small>ONE MODERN NBA / TEN HISTORICAL GREATS</small>
+      </div>
+    </section>
+    <div class="divider"></div>
+    <section aria-labelledby="episodes-title" id="episodes">
+      <div class="section-head"><div><div class="eyebrow">THE EPISODE GUIDE</div><h2 id="episodes-title">The lineup.</h2></div><p>Read the first investigation now. The remaining nine are locked until their individual articles are published.</p></div>
+      {nbaTimeMachineEpisodes.filter(ep=>ep.status==="published").map(ep=>(
+        <a class="current" href={ep.href} aria-label={"Read NBA Time Machine episode "+ep.number+": "+ep.name}>
+          <span class="big-no">{ep.number}</span>
+          <div><span class="state">AVAILABLE NOW</span><h3>{ep.name}</h3><p>Who does the NBA's greatest assist man resemble in 2025–26? Compare his closest matches with interactive radar charts.</p></div>
+          <span class="go">READ EPISODE →</span>
+        </a>
+      ))}
+      <div class="grid" aria-label="Upcoming locked episodes">
+      {nbaTimeMachineEpisodes.filter(ep=>ep.status!=="published").map(ep=>(
+        <article class="card" aria-label={"Episode "+ep.number+" "+ep.name+", locked"}>
+          <div class="top"><span class="num">EPISODE {ep.number}</span><span class="lock">🔒 LOCKED</span></div>
+          <div><h3>{ep.name}</h3><p>{ep.season} season</p></div>
+          <span class="bottom">COMING LATER</span>
+        </article>
+      ))}
+      </div>
+    </section>
+    <section class="note">
+      <div><h2>What makes a match?</h2><p>Our model compares scoring, efficiency, playmaking, rebounding and defensive activity, plus size and position. The starting weights are 70% statistics, 20% physical profile and 10% position. The rankings are exploratory, not claims about talent or greatness.</p></div>
+      <div><h2>Why one legend at a time?</h2><p>Because the rankings only start the conversation. Each episode explores where the numbers overlap, where they don't, and how the game changed around the player. No forced comparisons and no pretending that two eras are identical.</p></div>
+    </section>
+  </main>
+  <footer><a href="/" class="brand">anticipate<span>.</span></a><span>NBA TIME MACHINE / TEN EPISODES</span><span>© 2026 ANTICIPATE</span></footer>
+</div>
+</body>
+</html>
