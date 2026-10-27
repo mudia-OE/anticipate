@@ -210,7 +210,7 @@ footer{border-top:1px solid var(--line);padding:29px 0 46px;display:flex;gap:20p
     </section>
   </div>
   <div class="takeaway" role="status" aria-live="polite"><span class="arrow">↳</span><div><strong id="takeaway-title">The model's winner</strong><p id="takeaway-copy">The scoring load and steal rate look familiar; the playmaking and efficiency don't.</p></div></div>
-  <div class="table-scroll"><table class="duel-table"><caption>Behind the shapes ,  exact values, not radar coordinates</caption><thead><tr><th>Measure</th><th>Stockton '90</th><th id="match-table-header">Porter Jr. '26</th></tr></thead><tbody>
+  <div class="table-scroll"><table class="duel-table"><caption>Behind the shapes: exact values, not radar coordinates</caption><thead><tr><th>Measure</th><th>Stockton '90</th><th id="match-table-header">Porter Jr. '26</th></tr></thead><tbody>
   {features.map(f=><tr><td>{f.label}</td><td>{stockton[f.key].toFixed(1)}{f.unit}</td><td data-value={f.key}>{contenders[0][f.key].toFixed(1)}{f.unit}</td></tr>)}
   </tbody></table></div>
   <p class="chart-foot">The full similarity model standardizes differences using the modern 279-player sample. The visualization uses fixed explanatory ranges instead, so readers can see the actual stat shapes. The rankings are fixed model results, not recalculated by clicking a player.</p>
@@ -218,7 +218,7 @@ footer{border-top:1px solid var(--line);padding:29px 0 46px;display:flex;gap:20p
 <div class="story-layout"><article class="prose">
 <h2><span class="section-no">04 / THE CONTENDERS</span>One winner, three very different arguments</h2>
 <p>Start with <strong>Kevin Porter Jr.</strong> He produced 25.8 points per 100 possessions to Stockton's 23.0. His steal rate was 3.2% against Stockton's 3.5%. That combination gets you into the same statistical neighbourhood.</p>
-<p>But Porter is roughly four inches taller and 33 pounds heavier. His 33.8% assist rate is impressive in isolation ,  until you put it next to Stockton's 57.4%. And Stockton was much more efficient relative to his league (+7.0 rTS to Porter's −1.4).</p>
+<p>But Porter is roughly four inches taller and 33 pounds heavier. His 33.8% assist rate is impressive in isolation. Then you put it next to Stockton's 57.4%. And Stockton was much more efficient relative to his league (+7.0 rTS to Porter's −1.4).</p>
 <p>Now click <strong>Tre Jones</strong> in the graphic. Same listed height as Stockton: 185 cm. Jones used 19.2% of possessions, Stockton 20.6%. Jones' relative true shooting was +5.6, Stockton's +7.0. Suddenly the comparison <em>feels</em> a lot more recognizable. The catch? Jones' assist percentage was 29.2%.</p>
 <p>And <strong>Isaiah Collier</strong> makes his own case. He posted a 39.2% assist percentage, the closest of our five model matches. He's not Stockton, but if passing is the first thing you think about, his name deserves a longer look.</p>
 <div class="vs-card"><div class="player-side"><span>THE MODEL'S NO. 1</span><strong>Kevin Porter Jr.</strong><em>Closest overall measured profile</em></div><div class="vs">VS</div><div class="player-side"><span>THE BIGGEST WHAT-IF</span><strong>Tre Jones</strong><em>Closer in size, usage and efficiency</em></div></div>
@@ -294,7 +294,7 @@ footer{border-top:1px solid var(--line);padding:29px 0 46px;display:flex;gap:20p
     if(hb)hb.style.width=(p.height_cm/230*100).toFixed(2)+"%";
     if(wb)wb.style.width=(p.weight_lb/330*100).toFixed(2)+"%";
     const take=document.getElementById("takeaway-copy"),takeTitle=document.getElementById("takeaway-title");
-    if(takeTitle)takeTitle.textContent=p.name+" ,  rank "+(index+1)+" of 279";
+    if(takeTitle)takeTitle.textContent=p.name+": rank "+(index+1)+" of 279";
     if(take)take.textContent=p.takeaway+" "+p.statline;
   }
   buttons.forEach(function(button,index){button.addEventListener("click",function(){selectPlayer(index)})});
