@@ -1,0 +1,304 @@
+---
+const pageUrl = "https://anticipate-peak.vercel.app/research/stockton-time-machine/";
+const stockton = {
+  name: "John Stockton",
+  pts100: 23, relative_ts: 7, ast_pct: 57.4, trb_pct: 4.1,
+  usg_pct: 20.6, stl_pct: 3.5, blk_pct: 0.4,
+  height_cm: 185, weight_lb: 170, role: "Guard"
+};
+const contenders = [
+  {
+    name: "Kevin Porter Jr.", short:"Porter Jr.", team:"MIL",
+    distance:1.3000, pts100:25.8, relative_ts:-1.4, ast_pct:33.8, trb_pct:8.9,
+    usg_pct:24.3, stl_pct:3.2, blk_pct:1.5, height_cm:196, weight_lb:203, role:"Guard",
+    takeaway:"The model's winner. The scoring load and steal rate look familiar; the playmaking and efficiency don't.",
+    statline:"He lands closest overall partly because of his scoring load and steals, not because he's a carbon copy of Stockton."
+  },
+  {
+    name:"Tre Jones", short:"Tre Jones", team:"CHI",
+    distance:1.3357, pts100:24.4, relative_ts:5.6, ast_pct:29.2, trb_pct:6.2,
+    usg_pct:19.2, stl_pct:2.0, blk_pct:0.5, height_cm:185, weight_lb:190, role:"Guard",
+    takeaway:"The size-and-efficiency argument. Same listed height, similar usage and a far closer efficiency profile.",
+    statline:"If your mental picture of Stockton starts with a small, careful point guard, Jones might be the more recognizable answer."
+  },
+  {
+    name:"Isaiah Collier", short:"Collier", team:"UTA",
+    distance:1.3497, pts100:21.3, relative_ts:-1.4, ast_pct:39.2, trb_pct:5.3,
+    usg_pct:20.4, stl_pct:2.0, blk_pct:1.3, height_cm:193, weight_lb:210, role:"Guard",
+    takeaway:"The playmaking case. Among the top-five matches, Collier has the highest assist percentage.",
+    statline:"Collier's assist share gets closest of these five, and even that leaves a huge gap to Stockton's 57.4%."
+  },
+  {
+    name:"Jalen Suggs", short:"Suggs", team:"ORL",
+    distance:1.4332, pts100:24.0, relative_ts:-2.0, ast_pct:29.6, trb_pct:7.8,
+    usg_pct:22.9, stl_pct:3.2, blk_pct:2.3, height_cm:196, weight_lb:205, role:"Guard",
+    takeaway:"The disruption case. Suggs comes closest to Stockton's steal percentage, but their offensive profiles separate.",
+    statline:"The defensive activity jumps off the chart. The gap in creation and scoring efficiency is the other half of the story."
+  },
+  {
+    name:"Ryan Rollins", short:"Rollins", team:"MIL",
+    distance:1.4379, pts100:26.5, relative_ts:0.2, ast_pct:27.1, trb_pct:8.0,
+    usg_pct:24.2, stl_pct:2.3, blk_pct:1.3, height_cm:191, weight_lb:180, role:"Guard",
+    takeaway:"The compact-guard comparison. Rollins is relatively close in build, but further away in playmaking.",
+    statline:"Rollins' size keeps him in the conversation, though his role as a creator was very different."
+  }
+];
+const features = [
+  {key:"pts100", short:"PTS/100", label:"Points per 100 possessions",min:0,max:50,unit:""},
+  {key:"relative_ts",short:"rTS",label:"Relative true shooting",min:-10,max:15,unit:" pp"},
+  {key:"ast_pct",short:"AST%",label:"Assist percentage",min:0,max:65,unit:"%"},
+  {key:"trb_pct",short:"TRB%",label:"Total rebound percentage",min:0,max:25,unit:"%"},
+  {key:"usg_pct",short:"USG%",label:"Usage percentage",min:0,max:45,unit:"%"},
+  {key:"stl_pct",short:"STL%",label:"Steal percentage",min:0,max:5,unit:"%"},
+  {key:"blk_pct",short:"BLK%",label:"Block percentage",min:0,max:10,unit:"%"}
+];
+const physicalAxes = [
+ {key:"height_cm",short:"HEIGHT",label:"Height",min:0,max:230},
+ {key:"weight_lb",short:"WEIGHT",label:"Weight",min:0,max:330},
+ {key:"role",short:"GUARD",label:"Guard positional group",min:0,max:1}
+];
+const norm = (v, feature) => Math.max(0,Math.min(1,((feature.key === "role" ? (v.role === "Guard" ? 1:0):v[feature.key])-feature.min)/(feature.max-feature.min)));
+const poly = (data, features, center=190, radius=125) => features.map((f,i)=>{
+ const a=-Math.PI/2 + i * Math.PI*2/features.length;
+ const d=norm(data,f) * radius;
+ return (center+Math.cos(a)*d).toFixed(1)+","+(center+Math.sin(a)*d).toFixed(1);
+}).join(" ");
+const gridPoly = (features, fraction, center=190,radius=125) => features.map((_,i)=>{
+ const a=-Math.PI/2 + i * Math.PI*2/features.length;
+ return (center+Math.cos(a)*radius*fraction).toFixed(1)+","+(center+Math.sin(a)*radius*fraction).toFixed(1);
+}).join(" ");
+const labelPos=(i,n,center=190,radius=155)=>{
+ const a=-Math.PI/2+i*2*Math.PI/n;return {x:center+Math.cos(a)*radius,y:center+Math.sin(a)*radius};
+};
+const comparisons = [
+  {name:"Stockton '90",ast:57.4,type:"legend"},
+  {name:"Jokić '26",ast:50.3,type:"other"},
+  {name:"Cunningham '26",ast:45.2,type:"other"},
+  {name:"Collier '26",ast:39.2,type:"other"},
+  {name:"Porter Jr. '26",ast:33.8,type:"other"}
+];
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#10110f" />
+<title>We Looked for the Next John Stockton. The Numbers Had Other Ideas. | Anticipate</title>
+<meta name="description" content="John Stockton's 1989–90 season versus 279 NBA players from 2025–26. Explore five modern matches with interactive statistical and physical radar charts." />
+<link rel="canonical" href={pageUrl} />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Anticipate" />
+<meta property="og:title" content="We Looked for the Next John Stockton. The Numbers Had Other Ideas." />
+<meta property="og:description" content="A basketball time machine, 279 players, and a record-setting passer that nobody quite matches. Explore the interactive research." />
+<meta property="og:url" content={pageUrl} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="We Looked for the Next John Stockton. The Numbers Had Other Ideas." />
+<script type="application/ld+json" set:html={JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":"We Looked for the Next John Stockton. The Numbers Had Other Ideas.","description":"An interactive historical player-comparison feature on John Stockton and the 2025–26 NBA.","author":{"@type":"Person","name":"Divine Osas-Egbe"},"publisher":{"@type":"Organization","name":"Anticipate","url":"https://anticipate-peak.vercel.app/"},"mainEntityOfPage":pageUrl,"articleSection":"NBA Time Machine"})}></script>
+<style>
+:root {font-family:Arial,Helvetica,sans-serif;color:#f3f2eb;background:#10110f;--bg:#10110f;--panel:#191a17;--line:#343630;--lime:#d4ff45;--teal:#79c9c2;--muted:#a3a79e}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg)}a{color:inherit}a:hover{color:var(--lime)}button{font:inherit}button:focus-visible,a:focus-visible{outline:3px solid var(--lime);outline-offset:3px}.shell{width:min(1100px,calc(100% - 44px));margin:auto}
+header{height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.brand{font-size:24px;font-weight:900;letter-spacing:-1.3px;text-decoration:none}.brand span{color:var(--lime)}.back{font-size:11px;text-decoration:none;color:#b4b8ad;letter-spacing:1.4px}.eyebrow{font-size:10px;font-weight:800;color:var(--lime);letter-spacing:2.1px;text-transform:uppercase}.hero{padding:67px 0 37px;display:grid;grid-template-columns:1.16fr .84fr;gap:38px;align-items:center}
+.series{display:inline-flex;gap:12px;align-items:center;color:#cfd1c4;font-size:11px;letter-spacing:1px;margin-bottom:19px}.series span{background:var(--lime);color:#10110f;padding:6px 8px;font-weight:900}h1{font-size:clamp(46px,6.8vw,78px);letter-spacing:-4.7px;line-height:.99;margin:11px 0 24px;max-width:710px}h1 em{font-style:normal;color:var(--lime)}.dek{font-size:17px;line-height:1.72;color:#bfc2b7;max-width:690px}.hero-meta{display:flex;gap:12px 22px;flex-wrap:wrap;margin-top:28px;color:#a9ad9e;font-size:10px;letter-spacing:1px}.hero-meta b{color:#eee;font-weight:600}.hero-art{min-height:455px;border:1px solid #454b31;background:radial-gradient(ellipse at 25% 25%,#3e4920,transparent 56%),linear-gradient(135deg,#24281a,#151713);display:flex;flex-direction:column;justify-content:space-between;padding:25px;position:relative;overflow:hidden}.hero-art:before{content:"";position:absolute;width:350px;height:350px;border-radius:50%;border:1px solid #626e39;right:-130px;top:90px;opacity:.6}.hero-art:after{content:"";position:absolute;width:270px;height:270px;border:1px solid #536334;transform:rotate(45deg);right:-65px;top:132px}.hero-art .topline,.hero-art .bottomline{position:relative;z-index:1;display:flex;justify-content:space-between;letter-spacing:1.7px;color:#bcc6a4;font-size:10px}.hero-big{position:relative;z-index:1;font-size:clamp(106px,14vw,164px);font-weight:900;color:var(--lime);letter-spacing:-14px;line-height:.88}.hero-caption{position:relative;z-index:1;font-weight:800;letter-spacing:-.9px;font-size:24px;line-height:1.15;max-width:280px}
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);border-block:1px solid var(--line);margin:4px 0 66px}.stat-strip>div{padding:24px 21px;border-right:1px solid var(--line)}.stat-strip>div:last-child{border:0}.stat-strip strong{display:block;font-size:clamp(26px,4vw,43px);letter-spacing:-2px;color:var(--lime)}.stat-strip span{display:block;margin-top:7px;font-size:10px;line-height:1.6;color:var(--muted);letter-spacing:.8px}
+.story-layout{display:grid;grid-template-columns:minmax(0,720px) minmax(180px,1fr);gap:55px}.prose{font-size:16px;line-height:1.88;color:#d1d3c9}.prose p{margin:0 0 24px}.prose strong{color:#fff}.prose .opening{font-size:23px;line-height:1.54;color:#fff}.prose h2{font-size:clamp(30px,4vw,40px);line-height:1.12;letter-spacing:-1.4px;color:#fff;margin:60px 0 22px}.prose h2:first-child{margin-top:0}.section-no{display:block;color:var(--lime);font-size:11px;font-weight:800;letter-spacing:2px;margin-bottom:12px}.highlight{border-left:3px solid var(--lime);padding:14px 24px;background:#20241a;margin:32px 0;font-size:19px;color:#fff;line-height:1.5}.sidebar{position:relative}.side-block{border-top:1px solid var(--line);padding:20px 0}.side-block h3{font-size:11px;letter-spacing:1.3px;margin:0 0 10px;color:#fff}.side-block p,.side-block a{color:#aaaeb0;font-size:12px;line-height:1.75;overflow-wrap:anywhere}.mini-stat{font-size:38px;letter-spacing:-2px;font-weight:900;color:var(--lime)}
+.data-feature{margin:44px 0 56px;border:1px solid #42473a;background:#181a16;padding:24px}.data-head{display:flex;align-items:start;justify-content:space-between;gap:20px;margin-bottom:24px}.data-head h3{font-size:27px;letter-spacing:-1px;line-height:1.1;margin:8px 0}.data-head p{font-size:13px;color:#b4b7ad;margin:0;line-height:1.65}.data-badge{font-size:10px;white-space:nowrap;color:#161712;background:var(--lime);padding:9px 11px;font-weight:800}
+.picker{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}.pick{padding:12px 10px;border:1px solid #393b34;text-align:left;background:#21231f;color:#ccc;min-height:91px;cursor:pointer;transition:background .2s,border-color .2s}.pick:hover{border-color:#839270}.pick[aria-pressed=true]{border-color:var(--lime);background:#2b321c;color:#fff}.pick .number{display:block;color:var(--lime);font-size:10px;margin-bottom:11px;font-weight:800}.pick .person{display:block;font-size:12px;line-height:1.3;font-weight:700}.pick .distance{display:block;font-size:10px;color:#aeb2a8;margin-top:6px}
+.compare-top{display:flex;gap:20px;justify-content:space-between;align-items:end;flex-wrap:wrap;margin-top:26px;border-top:1px solid var(--line);padding-top:20px}.compare-top h4{font-size:24px;letter-spacing:-.7px;margin:6px 0}.color-key{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:#c3c8b8}.color-key i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:middle}.two-charts{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-top:18px}.chart-panel{border:1px solid #383c34;background:#141612;padding:17px 13px;min-width:0}.chart-panel h5{margin:0 0 5px;font-size:13px;letter-spacing:.2px}.chart-panel .micro{font-size:11px;color:#a6ab9e;line-height:1.5}.radar{display:block;width:100%;height:auto;max-height:370px}.radar text{fill:#c1c6b5;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700}.radar .grid{fill:none;stroke:#40443b;stroke-width:1}.radar .axis{stroke:#44493f;stroke-width:1}.radar .historic{fill:rgba(212,255,69,.15);stroke:#d4ff45;stroke-width:2.8;stroke-linejoin:round}.radar .modern{fill:rgba(121,201,194,.17);stroke:#79c9c2;stroke-width:2.8;stroke-linejoin:round}.radar circle{fill:#c8cebc}.chart-foot{font-size:11px;line-height:1.7;color:#acb1a6;margin-top:6px}.takeaway{padding:16px 18px;border:1px solid #415044;background:#1d2925;margin-top:14px;display:flex;gap:13px;align-items:start}.takeaway .arrow{color:var(--teal);font-size:22px}.takeaway strong{display:block;font-size:13px;color:#fff;margin-bottom:6px}.takeaway p{font-size:13px;line-height:1.65;color:#c5cdc6;margin:0}
+.duel-table{width:100%;border-collapse:collapse;margin:20px 0}.duel-table caption{text-align:left;font-size:11px;letter-spacing:1px;color:#b8c0b1;margin-bottom:9px}.duel-table th,.duel-table td{text-align:right;padding:10px 7px;border-bottom:1px solid #353930;font-size:12px}.duel-table th:first-child,.duel-table td:first-child{text-align:left}.duel-table th{color:#aeb5a4;font-size:11px;font-weight:500}.duel-table td:first-child{color:#e4e9d8}.duel-table td:nth-child(2){color:var(--lime)}.duel-table td:nth-child(3){color:var(--teal)}.table-scroll{overflow-x:auto}
+.physical-bars{margin:15px 8px 8px}.physical-row{margin:16px 0}.physical-label{display:flex;justify-content:space-between;font-size:11px;color:#c6cabf;margin-bottom:8px}.physical-track{height:10px;background:#323730;position:relative}.physical-track .first,.physical-track .second{height:5px;position:absolute;left:0}.physical-track .first{top:0;background:var(--lime)}.physical-track .second{bottom:0;background:var(--teal)}
+.assist-chart{background:#1a1c18;border:1px solid var(--line);padding:24px;margin:34px 0}.assist-chart h3{margin:0 0 6px;font-size:20px;letter-spacing:-.5px;color:#fff}.assist-chart>p{font-size:12px;line-height:1.7;color:var(--muted);margin:0 0 24px}.assist-row{display:grid;grid-template-columns:132px 1fr 51px;gap:12px;align-items:center;margin:15px 0;font-size:12px}.assist-row .name{line-height:1.35}.assist-track{height:16px;background:#33372f;overflow:hidden}.assist-fill{height:100%;background:#799b96}.assist-fill.gold{background:var(--lime)}.assist-row b{text-align:right;font-size:12px}
+.vs-card{display:grid;grid-template-columns:1fr auto 1fr;gap:15px;align-items:center;border:1px solid var(--line);background:#1b1d18;padding:25px;margin:30px 0}.vs-card .player-side span{display:block;font-size:11px;color:var(--muted);margin-bottom:9px}.vs-card strong{font-size:clamp(24px,3.5vw,37px);letter-spacing:-1px;color:#fff}.vs-card em{font-style:normal;font-size:11px;color:#aeb6aa;display:block;margin-top:7px}.vs-card .vs{font-size:17px;font-weight:900;color:var(--lime)}.vs-card .player-side:last-child{text-align:right}.method{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:25px 0;margin:40px 0;color:#bec2b7;font-size:13px;line-height:1.78}.method h3{font-size:15px;color:#fff;margin:0 0 10px}.method p{margin:0 0 12px}.method a{color:var(--lime)}.end-mark{color:var(--lime);font-weight:900;font-size:42px;letter-spacing:-1px}.next-episode{display:block;text-decoration:none;border:1px solid #4a5732;background:linear-gradient(120deg,#252d19,#191b17);padding:24px;margin:50px 0 15px}.next-episode small{font-size:10px;letter-spacing:1.4px;color:var(--lime)}.next-episode h3{font-size:24px;line-height:1.2;letter-spacing:-.6px;margin:12px 0}.next-episode p{font-size:12px;color:#b2b6a7;margin:0}
+footer{border-top:1px solid var(--line);padding:29px 0 46px;display:flex;gap:20px;align-items:center;justify-content:space-between;color:#aeb2a5;font-size:11px;margin-top:50px}
+@media(max-width:900px){.hero{grid-template-columns:1fr}.hero-art{min-height:300px}.hero-big{font-size:125px}.story-layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}.stat-strip{margin-bottom:45px}.two-charts{grid-template-columns:1fr 1fr}}
+@media(max-width:670px){.shell{width:calc(100% - 26px)}header{height:68px}.hero{padding-top:46px}h1{font-size:clamp(41px,12vw,61px);letter-spacing:-2.5px}.hero-art{min-height:285px}.stat-strip{grid-template-columns:1fr 1fr}.stat-strip>div:nth-child(2){border-right:0}.stat-strip>div:nth-child(-n+2){border-bottom:1px solid var(--line)}.stat-strip>div{padding:18px 14px}.picker{grid-template-columns:repeat(2,minmax(0,1fr))}.pick{min-height:74px}.two-charts{grid-template-columns:1fr}.data-feature{padding:15px}.data-head{flex-direction:column;gap:12px}.data-badge{white-space:normal}.radar{max-height:350px}.assist-row{grid-template-columns:100px 1fr 45px;gap:8px;font-size:11px}.sidebar{grid-template-columns:1fr}.vs-card{padding:15px;gap:8px}.vs-card strong{font-size:23px}.prose{font-size:15.5px}.prose .opening{font-size:21px}footer{flex-direction:column;align-items:start}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header><a class="brand" href="/" aria-label="Anticipate home">anticipate<span>.</span></a><a class="back" href="/#research">← BACK TO RESEARCH</a></header>
+<main>
+<section class="hero">
+  <div>
+    <div class="series"><span>01 / 10</span> NBA TIME MACHINE · SERIES PREMIERE</div>
+    <div class="eyebrow">ANTICIPATE ORIGINAL RESEARCH / NBA HISTORY</div>
+    <h1>We looked for the next <em>John Stockton.</em> The numbers had other ideas.</h1>
+    <p class="dek">We searched 279 players for a modern version of one of basketball's greatest passers. Our model picked a winner. That was the easy part.</p>
+    <div class="hero-meta"><span>BY <b>DIVINE OSAS-EGBE</b></span><span>STOCKTON: <b>1989–90</b></span><span>MODERN NBA: <b>2025–26</b></span><span><b>7-MIN READ</b></span></div>
+  </div>
+  <div class="hero-art" role="img" aria-label="Graphic showing Stockton's 57.4 percent assist rate with vintage-inspired basketball court lines">
+    <div class="topline"><span>ANTICIPATE / TIME MACHINE</span><span>1989–90 → 2025–26</span></div>
+    <div><div class="hero-big">57.4<span style="font-size:.42em;letter-spacing:-2px">%</span></div><div class="hero-caption">OF TEAMMATES' MADE SHOTS ASSISTED*</div></div>
+    <div class="bottomline"><span>*WHILE ON COURT · ESTIMATE</span><span>STOCKTON / 01</span></div>
+  </div>
+</section>
+<div class="stat-strip" aria-label="John Stockton 1989–90 season highlights">
+  <div><strong>14.5</strong><span>ASSISTS PER GAME<br/>1989–90</span></div>
+  <div><strong>1,134</strong><span>TOTAL ASSISTS<br/>IN 78 GAMES</span></div>
+  <div><strong>+7.0</strong><span>RELATIVE TRUE SHOOTING<br/>PERCENTAGE POINTS</span></div>
+  <div><strong>207</strong><span>STEALS<br/>REGULAR SEASON</span></div>
+</div>
+<div class="story-layout">
+<article class="prose">
+<p class="opening">Imagine you're trying to guard a guy who doesn't need to score to make you miserable. Every time you take away one passing lane, he seems to find another. You look up and his teammate has an open layup. Again.</p>
+<p>That was the John Stockton problem.</p>
+<p>At 6-foot-1 and 170 pounds, he wasn't the biggest player on the floor. He wasn't the flashiest, either. But in 1989–90, Utah's offense kept finding its way through him. Over 78 games he piled up 1,134 assists, averaged 14.5 a night, and still scored an efficient 17.2 points himself.</p>
+<p>So here's a fun question: <strong>if Stockton walked into today's NBA, who would he actually resemble?</strong></p>
+<p>Not “who's as great as him?” Nobody's asking a 25-year-old to reproduce 19 seasons of work. We wanted to know who looked most like a single, extraordinary Stockton season — in production, size and role.</p>
+<p>We gathered every player who logged at least 1,000 minutes in 2025–26. That's 279 players. Then we let the numbers pick their five closest matches.</p>
+<div class="highlight">The algorithm gave us an answer. The closer we looked, the less straightforward that answer became.</div>
+<h2><span class="section-no">01 / THE SEASON</span>A point guard who barely needed the ball to shoot</h2>
+<p>Stockton's 57.4% assist percentage in 1989–90 is almost ridiculous when you stop to think about it. The metric estimates what portion of his teammates' made field goals he assisted while he was on the court. Imagine more than half of those makes having his fingerprints on them.</p>
+<p>And here's the part I find even more interesting: his usage rate was just 20.6%. Usage is largely about finishing possessions through shots, free throws or turnovers — it isn't a stopwatch for how long someone holds the ball. Stockton could be at the centre of nearly every action without needing to be the one taking the shot.</p>
+<p>His shooting held up, too. He finished 7.0 percentage points above his league's average true shooting. This wasn't a guard racking up assists while giving points back on the other end.</p>
+<div class="assist-chart">
+  <h3>That assist percentage was a different planet</h3>
+  <p>1989–90 Stockton versus selected leaders and matches from our 2025–26 sample. Higher means a larger share of teammates' made baskets assisted while on court.</p>
+  {comparisons.map(c=>
+    <div class="assist-row">
+      <span class="name">{c.name}</span>
+      <div class="assist-track" aria-hidden="true"><div class:list={["assist-fill",{"gold":c.type==="legend"}]} style={"width:"+(c.ast/65*100).toFixed(2)+"%"}></div></div>
+      <b>{c.ast.toFixed(1)}%</b>
+    </div>
+  )}
+  <p class="chart-foot">Jokić led the 279 qualified modern players in assist percentage (50.3%). Stockton still cleared him by 7.1 percentage points. Assist percentage is a rate estimate, not a literal count of every possession.</p>
+</div>
+<h2><span class="section-no">02 / THE SEARCH</span>And the closest match is… Kevin Porter Jr.?</h2>
+<p>I'll admit it: that's not the first name most people would throw out in a “modern John Stockton” conversation.</p>
+<p>But the model doesn't know reputations. It compares seven production measures, adds height and weight, and accounts for broad playing position. It gives 70% weight to statistical output, 20% to physical measurements and 10% to positional group.</p>
+<p>Porter finished first, just ahead of Tre Jones and Isaiah Collier. They're close enough that it would be silly to treat that ordering as an ironclad verdict. The fun part is figuring out <em>why</em> each guy ended up there.</p>
+</article>
+<aside class="sidebar" aria-label="Article guide">
+ <div class="side-block"><h3>THE EXPERIMENT</h3><div class="mini-stat">279</div><p>2025–26 players, each with at least 1,000 regular-season minutes. Only one row per player.</p></div>
+ <div class="side-block"><h3>WHAT THE SCORE MEANS</h3><p>Smaller distance = closer measured profile. A distance of 1.30 is not “130% similar,” and none of these numbers ranks talent or greatness.</p></div>
+ <div class="side-block"><h3>THE ORIGINAL STOCKTON</h3><p>14.5 assists and 17.2 points per game in 1989–90. <a href="https://www.nba.com/news/history-nba-legend-john-stockton" target="_blank" rel="noopener noreferrer">NBA history ↗</a></p></div>
+ <div class="side-block"><h3>THE DATA</h3><p>Historical season values: Basketball-Reference profile; modern season: per-100 and advanced tables; physical bios: NBA Stats-derived source.</p><a href="https://www.basketball-reference.com/players/s/stockjo01.html" target="_blank" rel="noopener noreferrer">Stockton's season log ↗</a></div>
+</aside>
+</div>
+<section class="data-feature" id="compare" aria-label="Interactive John Stockton player comparison">
+  <div class="data-head"><div><div class="eyebrow">03 / INTERACTIVE RESEARCH</div><h3>Who's your modern Stockton?</h3><p>Tap a player. Watch the profile change. The numbers behind each radar update with your pick.</p></div><span class="data-badge">5 CLOSEST MATCHES / 279 TESTED</span></div>
+  <div class="picker" role="group" aria-label="Choose a player to compare">
+    {contenders.map((p,i)=><button type="button" class="pick" data-pick={i} aria-pressed={i===0?"true":"false"}><span class="number">0{i+1} / {p.team}</span><span class="person">{p.name}</span><span class="distance">DISTANCE {p.distance.toFixed(3)}</span></button>)}
+  </div>
+  <div class="compare-top">
+    <div><div class="eyebrow">STOCKTON 1989–90 VS.</div><h4 id="selected-name">Kevin Porter Jr. · 2025–26</h4></div>
+    <div class="color-key"><span><i style="background:var(--lime)"></i>STOCKTON</span><span><i style="background:var(--teal)"></i>MODERN MATCH</span></div>
+  </div>
+  <div class="two-charts">
+    <section class="chart-panel"><h5>Statistical fingerprint</h5><span class="micro">7 measures · fixed comparison ranges</span>
+      <svg class="radar" viewBox="0 0 380 380" role="img" aria-label="Radar chart comparing John Stockton and the selected modern player in seven statistics" id="stat-radar">
+       {Array.from({length:5},(_,i)=><polygon class="grid" points={gridPoly(features,(i+1)/5)} />)}
+       {features.map((f,i)=>{const a=labelPos(i,features.length,190,125);const l=labelPos(i,features.length,190,160);return <g><line class="axis" x1="190" y1="190" x2={a.x} y2={a.y}/><text x={l.x} y={l.y} text-anchor="middle" dominant-baseline="central">{f.short}</text></g>})}
+       <polygon class="historic" points={poly(stockton,features)}></polygon>
+       <polygon class="modern" id="modern-stat-shape" points={poly(contenders[0],features)}></polygon>
+      </svg>
+      <div class="chart-foot">A larger shape is <strong>not</strong> automatically better. Axes use different fixed ranges; relative TS is plotted from −10 to +15 pp. This graphic does not use the model's z-score distance.</div>
+    </section>
+    <section class="chart-panel"><h5>Physical profile + position</h5><span class="micro">Height · weight · guard-category match</span>
+      <svg class="radar" viewBox="0 0 380 380" role="img" aria-label="Three-axis radar comparing height, weight and whether the player's position is a guard">
+       {Array.from({length:5},(_,i)=><polygon class="grid" points={gridPoly(physicalAxes,(i+1)/5)} />)}
+       {physicalAxes.map((f,i)=>{const a=labelPos(i,physicalAxes.length,190,125);const l=labelPos(i,physicalAxes.length,190,159);return <g><line class="axis" x1="190" y1="190" x2={a.x} y2={a.y}/><text x={l.x} y={l.y} text-anchor="middle" dominant-baseline="central">{f.short}</text></g>})}
+       <polygon class="historic" points={poly(stockton,physicalAxes)}></polygon>
+       <polygon class="modern" id="modern-physical-shape" points={poly(contenders[0],physicalAxes)}></polygon>
+      </svg>
+      <div class="physical-bars">
+        <div class="physical-row"><div class="physical-label"><span>HEIGHT</span><span><b>185 cm</b> vs. <b id="height-value">196 cm</b></span></div><div class="physical-track"><div class="first" style="width:80.43%"></div><div class="second" id="height-bar" style="width:85.22%"></div></div></div>
+        <div class="physical-row"><div class="physical-label"><span>WEIGHT</span><span><b>170 lb</b> vs. <b id="weight-value">203 lb</b></span></div><div class="physical-track"><div class="first" style="width:51.52%"></div><div class="second" id="weight-bar" style="width:61.52%"></div></div></div>
+      </div>
+      <div class="chart-foot">Height / 230 cm and weight / 330 lb are display scales only. The third axis is categorical (both players listed as guards), not a measurement of size or athleticism. Listed weights may differ from playing-season weight.</div>
+    </section>
+  </div>
+  <div class="takeaway" role="status" aria-live="polite"><span class="arrow">↳</span><div><strong id="takeaway-title">The model's winner</strong><p id="takeaway-copy">The scoring load and steal rate look familiar; the playmaking and efficiency don't.</p></div></div>
+  <div class="table-scroll"><table class="duel-table"><caption>Behind the shapes — exact values, not radar coordinates</caption><thead><tr><th>Measure</th><th>Stockton '90</th><th id="match-table-header">Porter Jr. '26</th></tr></thead><tbody>
+  {features.map(f=><tr><td>{f.label}</td><td>{stockton[f.key].toFixed(1)}{f.unit}</td><td data-value={f.key}>{contenders[0][f.key].toFixed(1)}{f.unit}</td></tr>)}
+  </tbody></table></div>
+  <p class="chart-foot">The full similarity model standardizes differences using the modern 279-player sample. The visualization uses fixed explanatory ranges instead, so readers can see the actual stat shapes. The rankings are fixed model results—not recalculated by clicking a player.</p>
+</section>
+<div class="story-layout"><article class="prose">
+<h2><span class="section-no">04 / THE CONTENDERS</span>One winner, three very different arguments</h2>
+<p>Start with <strong>Kevin Porter Jr.</strong> He produced 25.8 points per 100 possessions to Stockton's 23.0. His steal rate was 3.2% against Stockton's 3.5%. That combination gets you into the same statistical neighbourhood.</p>
+<p>But Porter is roughly four inches taller and 33 pounds heavier. His 33.8% assist rate is impressive in isolation — until you put it next to Stockton's 57.4%. And Stockton was much more efficient relative to his league (+7.0 rTS to Porter's −1.4).</p>
+<p>Now click <strong>Tre Jones</strong> in the graphic. Same listed height as Stockton: 185 cm. Jones used 19.2% of possessions, Stockton 20.6%. Jones' relative true shooting was +5.6, Stockton's +7.0. Suddenly the comparison <em>feels</em> a lot more recognizable. The catch? Jones' assist percentage was 29.2%.</p>
+<p>And <strong>Isaiah Collier</strong> makes his own case. He posted a 39.2% assist percentage, the closest of our five model matches. He's not Stockton, but if passing is the first thing you think about, his name deserves a longer look.</p>
+<div class="vs-card"><div class="player-side"><span>THE MODEL'S NO. 1</span><strong>Kevin Porter Jr.</strong><em>Closest overall measured profile</em></div><div class="vs">VS</div><div class="player-side"><span>THE BIGGEST WHAT-IF</span><strong>Tre Jones</strong><em>Closer in size, usage and efficiency</em></div></div>
+<p>That's what makes this more interesting than a simple “who's the next X?” list. You can get multiple reasonable answers depending on what you think makes Stockton <em>Stockton</em>.</p>
+<h2><span class="section-no">05 / THE OUTLIER</span>The one thing no one could copy</h2>
+<p>The 2025–26 player who came closest to Stockton's assist percentage wasn't Porter. Or Jones. Or even Collier.</p>
+<p>It was <strong>Nikola Jokić</strong>, at 50.3%. Behind him was Cade Cunningham at 45.2%.</p>
+<p>There's something wonderfully strange about that. A 6-foot-11 center was the closest modern player to Stockton's share of teammates' assisted baskets, but nobody would look at those two on a court and confuse their styles.</p>
+<p>That's the point of including physical profiles in our model. Similar production can come from very different kinds of basketball players. And similar-looking players can do completely different jobs.</p>
+<div class="highlight">We found the nearest number. We didn't find the same player.</div>
+<h2><span class="section-no">06 / THE VERDICT</span>Maybe there isn't a next Stockton</h2>
+<p>The data has an answer: <strong>Kevin Porter Jr.</strong>, with a distance of 1.300 in our first model. Fair enough.</p>
+<p>But if you'd rather nominate Tre Jones because of the size and efficiency, I get it. If you'd choose Isaiah Collier for the playmaking, I get that too.</p>
+<p>What I'm less willing to do is pretend one season of numbers can capture everything Stockton did. His connection with Karl Malone mattered. The spacing and shot selection of the late '80s mattered. The way Utah built its offense mattered. And assist percentage can't tell you how hard the pass was or how much pressure a defense was under.</p>
+<p>When we started this project, I expected the fun part to be seeing a modern name next to a legend. Instead, the interesting part was discovering exactly where the comparison fell apart.</p>
+<p>For Stockton, that breaking point was the same thing that made him exceptional in the first place: an almost absurd share of the offense's playmaking, without needing to finish every possession himself.</p>
+<p>So yes, the model found a closest match. But the next John Stockton?</p>
+<p><strong>I'm not sure we've found him yet.</strong></p>
+<div class="end-mark">a.</div>
+<section class="method" aria-label="Methodology and sources">
+ <h3>THE FINE PRINT / HOW WE DID THIS</h3>
+ <p><strong>Sample:</strong> one historical reference season (Stockton, 1989–90) compared with 279 NBA players who played at least 1,000 minutes in 2025–26. Traded players have combined-season rows.</p>
+ <p><strong>Model:</strong> mean squared standardized differences in PTS/100, rTS%, AST%, TRB%, USG%, STL% and BLK%, weighted 70%; height and weight differences weighted 20%; broad positional match weighted 10%. Overall distance is the square root of the combined score. Lower is closer. This is similarity, not greatness or player quality.</p>
+ <p><strong>Constraints:</strong> single-season comparisons, era differences, official listed weights (not necessarily playing-weight), three-point percentage excluded from scoring, and simplified guard/forward/center roles. Radar charts use fixed plotting ranges, not the exact distance model. The 1989–90 historical inputs should be independently audited before the project is treated as a definitive research result.</p>
+ <p><strong>Sources:</strong> <a href="https://www.basketball-reference.com/players/s/stockjo01.html" target="_blank" rel="noopener noreferrer">Stockton's season record</a> · <a href="https://www.nba.com/news/history-nba-legend-john-stockton" target="_blank" rel="noopener noreferrer">NBA history profile</a> · <a href="https://www.basketball-reference.com/leagues/NBA_2026_per_poss.html" target="_blank" rel="noopener noreferrer">2025–26 per 100 possessions</a> · <a href="https://www.basketball-reference.com/leagues/NBA_2026_advanced.html" target="_blank" rel="noopener noreferrer">2025–26 advanced stats</a> · <a href="https://github.com/EasySportsApps/nba_api_25_26_data" target="_blank" rel="noopener noreferrer">NBA Stats-derived bio dataset</a>.</p>
+</section>
+<a class="next-episode" href="/#research"><small>NBA TIME MACHINE / MORE TO COME</small><h3>Ten legends. One modern NBA. Nine more questions.</h3><p>Return to the Anticipate research desk to follow the series →</p></a>
+</article><aside class="sidebar" aria-label="Further reading">
+<div class="side-block"><h3>THE TOP FIVE</h3>{contenders.map((p,i)=><p><b style="color:#fff">{String(i+1).padStart(2,"0")}</b> &nbsp; {p.name}<br/>Distance {p.distance.toFixed(3)}</p>)}</div>
+<div class="side-block"><h3>WHAT ABOUT 3-POINTERS?</h3><p>We record 3P%, but leave it out of the score. Different eras gave guards wildly different three-point opportunities; accuracy alone ignores attempts.</p></div>
+<div class="side-block"><h3>EXPLORE THE COMPARISONS</h3><a href="#compare">Open the interactive radar charts ↑</a></div>
+</aside></div>
+</main>
+<footer><a class="brand" href="/">anticipate<span>.</span></a><span>NBA TIME MACHINE / EPISODE 01</span><span>© 2026 ANTICIPATE. ALL ANALYSIS IS EXPLORATORY.</span></footer>
+</div>
+<script type="application/json" id="contenders-data" set:html={JSON.stringify({stockton,contenders,features,physicalAxes})}></script>
+<script is:inline>
+(function(){
+  const node=document.getElementById("contenders-data");
+  if(!node)return;
+  const data=JSON.parse(node.textContent || "{}");
+  const comparePlayers=data.contenders || [];
+  const buttons=Array.from(document.querySelectorAll("[data-pick]"));
+  const norm=function(p,feature){
+    const v=feature.key==="role"?(p.role==="Guard"?1:0):p[feature.key];
+    return Math.max(0,Math.min(1,(v-feature.min)/(feature.max-feature.min)));
+  };
+  const poly=function(p,features){
+    return features.map(function(f,i){
+      const angle=-Math.PI/2+i*2*Math.PI/features.length;
+      const n=norm(p,f)*125;
+      return (190+Math.cos(angle)*n).toFixed(1)+","+(190+Math.sin(angle)*n).toFixed(1);
+    }).join(" ");
+  };
+  function selectPlayer(index){
+    const p=comparePlayers[index];if(!p)return;
+    buttons.forEach(function(btn,i){btn.setAttribute("aria-pressed",i===index?"true":"false")});
+    const stat=document.getElementById("modern-stat-shape"),body=document.getElementById("modern-physical-shape");
+    if(stat)stat.setAttribute("points",poly(p,data.features));
+    if(body)body.setAttribute("points",poly(p,data.physicalAxes));
+    const title=document.getElementById("selected-name");
+    if(title)title.textContent=p.name+" · 2025–26";
+    const tableHead=document.getElementById("match-table-header");
+    if(tableHead)tableHead.textContent=p.short+" '26";
+    document.querySelectorAll("[data-value]").forEach(function(el){
+      const feature=data.features.find(function(f){return f.key===el.dataset.value});
+      if(feature)el.textContent=p[feature.key].toFixed(1)+feature.unit;
+    });
+    const h=document.getElementById("height-value"),w=document.getElementById("weight-value");
+    if(h)h.textContent=p.height_cm+" cm";
+    if(w)w.textContent=p.weight_lb+" lb";
+    const hb=document.getElementById("height-bar"),wb=document.getElementById("weight-bar");
+    if(hb)hb.style.width=(p.height_cm/230*100).toFixed(2)+"%";
+    if(wb)wb.style.width=(p.weight_lb/330*100).toFixed(2)+"%";
+    const take=document.getElementById("takeaway-copy"),takeTitle=document.getElementById("takeaway-title");
+    if(takeTitle)takeTitle.textContent=p.name+" — rank "+(index+1)+" of 279";
+    if(take)take.textContent=p.takeaway+" "+p.statline;
+  }
+  buttons.forEach(function(button,index){button.addEventListener("click",function(){selectPlayer(index)})});
+})();
+</script>
+</body>
+</html>
