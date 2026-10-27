@@ -1,5 +1,7 @@
 
 ---
+import { nbaTimeMachineEpisodes } from "../data/nbaTimeMachineSeries.js";
+
 const stories = [
   {
     category: "DEFENSIVE ANALYSIS",
@@ -14,14 +16,6 @@ const stories = [
     title: "Where Does Carmelo Anthony Rank Among the Greatest Scorers?",
     description: "Examining Carmelo Anthony's place on the all-time scoring list, beyond just his career point total.",
     type: "RESEARCH"
-  },
-  {
-    category: "PLAYER COMPARISONS",
-    number: "03",
-    title: "We Looked for the Next John Stockton. The Numbers Had Other Ideas.",
-    description: "NBA Time Machine starts with an unexpected match, five interactive player comparisons and a playmaking record that still stands out.",
-    type: "NBA TIME MACHINE",
-    href: "/research/stockton-time-machine/"
   }
 ];
 ---
@@ -403,6 +397,39 @@ const stories = [
       .series-spotlight .spot-number{font-size:clamp(56px,8vw,92px);color:var(--lime);font-weight:900;letter-spacing:-6px;white-space:nowrap}
       .series-spotlight .spot-cta{font-size:11px;letter-spacing:1px;color:var(--lime);font-weight:800;display:inline-block;margin-top:16px}
       @media(max-width:760px){.series-spotlight{grid-template-columns:1fr;padding:22px}.series-spotlight .spot-number{display:none}}
+
+      .main-feature {
+        background: radial-gradient(ellipse at 90% 25%, #435525, transparent 52%), linear-gradient(120deg,#2d391e,#191d17 72%);
+        border-color: #687d3f;
+        padding: 43px;
+      }
+      .main-feature h3 {font-size:clamp(37px,4.8vw,58px); max-width:950px}
+      .second-feature {padding:27px 33px; background:#1b1e18; border-color:#30382b;}
+      .second-feature h3 {font-size:clamp(24px,3vw,33px); max-width:900px; margin:12px 0;}
+      .second-feature p {font-size:12px;}
+      .second-feature strong {margin-top:18px;}
+      .stories {grid-template-columns:repeat(2,minmax(0,1fr))}
+      .series-section {border-top:1px solid var(--line);padding-top:75px;}
+      .series-intro {border:1px solid #45523a; padding:28px 30px;margin-bottom:14px;background:linear-gradient(120deg,#212b1c,#1b211a);display:flex;gap:30px;align-items:center;justify-content:space-between;}
+      .series-intro p {max-width:640px;font-size:13px;line-height:1.8;color:#bfc4b8;margin:8px 0 0;}
+      .series-intro .series-kicker {font-size:11px;letter-spacing:1.3px;color:var(--lime);font-weight:800;margin:0;}
+      .series-explore {display:block;white-space:nowrap;font-size:11px;font-weight:800;letter-spacing:1px;color:#12160c;background:var(--lime);padding:15px 16px;}
+      .episode-grid {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;}
+      .episode-tile {min-height:162px;padding:16px;display:flex;flex-direction:column;border:1px solid #363a32;background:#1a1c18;text-decoration:none;min-width:0;}
+      .episode-top {display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:auto;}
+      .episode-top b {color:#a7aea0;font-size:10px;letter-spacing:1.1px;}
+      .episode-status {font-size:9px;font-weight:800;letter-spacing:.5px;white-space:nowrap;}
+      .episode-status.locked {color:#999f94;}
+      .episode-status.available {color:var(--lime);}
+      .episode-tile strong {display:block;color:#eee;font-size:clamp(16px,1.6vw,23px);line-height:1.14;letter-spacing:-.5px;margin-top:20px;}
+      .episode-season {font-size:10px;color:#9ea49b;margin-top:9px;}
+      .episode-live {background:linear-gradient(140deg,#2a371c,#1d2419);border-color:#899c52;transition:border-color .2s,transform .2s;}
+      .episode-live:hover {border-color:var(--lime);transform:translateY(-3px);}
+      .episode-locked {opacity:.78;cursor:default;}
+      @media(max-width:1000px) {.episode-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.series-intro{align-items:start;flex-direction:column;}}
+      @media(max-width:760px) {.episode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.series-section{padding-top:55px}.series-intro{padding:20px}.main-feature{padding:27px 23px}.main-feature h3{font-size:34px}.second-feature{padding:24px 23px}.stories{grid-template-columns:1fr}}
+      @media(max-width:400px) {.episode-tile{padding:13px;min-height:149px}.episode-tile strong{font-size:17px}.episode-status{font-size:8px}}
+
 </style>
   </head>
   <body>
@@ -411,6 +438,7 @@ const stories = [
         <a class="brand" href="#">anticipate<span>.</span></a>
         <nav aria-label="Main navigation">
           <a href="#research">Research</a>
+          <a href="#series">Series</a>
           <a href="#lab">The Lab</a>
           <a href="#about">About</a>
           <a href="https://www.instagram.com/anticipate.peak/" target="_blank" rel="noopener noreferrer" aria-label="Anticipate on Instagram">Instagram ↗</a>
@@ -475,10 +503,17 @@ const stories = [
             <a class="section-link" href="#research">ALL RESEARCH ↗</a>
           </div>
 
-          <a href="/research/haliburton-achilles/" class="featured-story"><div class="eyebrow">FEATURED INVESTIGATION / THE MODEL ROOM</div><h3>Tyrese Haliburton: A Career-Ending Injury? Or a <span>Career-Defining One?</span></h3><p>24 NBA Achilles recoveries. One model. What the numbers suggest about Haliburton’s return.</p><strong>READ THE INVESTIGATION ↗</strong></a>
-          <a href="/research/stockton-time-machine/" class="series-spotlight" aria-label="Read NBA Time Machine episode one on John Stockton">
-            <div><div class="spot-brow">NEW SERIES / NBA TIME MACHINE / EPISODE 01</div><h3>We looked for the next John Stockton. <span style="color:var(--lime)">The numbers had other ideas.</span></h3><p>279 players, five surprising contenders and interactive radar charts. Make your own comparison.</p><span class="spot-cta">EXPLORE EPISODE 01 ↗</span></div>
-            <div class="spot-number" aria-hidden="true">57.4%</div>
+          <a href="/research/stockton-time-machine/" class="featured-story main-feature">
+            <div class="eyebrow">FEATURED INVESTIGATION / NBA TIME MACHINE / EPISODE 01</div>
+            <h3>We Looked for the Next <span>John Stockton.</span></h3>
+            <p>279 players. Five closest matches. A playmaking profile nobody in 2025–26 could quite reproduce. Explore the interactive statistical and physical comparisons.</p>
+            <strong>READ THE FEATURE ↗</strong>
+          </a>
+          <a href="/research/haliburton-achilles/" class="featured-story second-feature">
+            <div class="eyebrow">MORE RESEARCH / THE MODEL ROOM</div>
+            <h3>Tyrese Haliburton: A Career-Ending Injury? Or a <span>Career-Defining One?</span></h3>
+            <p>24 NBA Achilles recoveries. One model. What the numbers suggest about Haliburton's return.</p>
+            <strong>READ THE INVESTIGATION ↗</strong>
           </a>
           <div class="stories">
             {stories.map((story) => (
@@ -494,6 +529,40 @@ const stories = [
                   {story.href ? <a class="story-read" href={story.href}>READ EPISODE 01 ↗</a> : <span>COMING INTO FOCUS ↗</span>}
                 </div>
               </article>
+            ))}
+          </div>
+        </section>
+
+        <section class="section series-section" id="series" aria-labelledby="series-title">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">ORIGINAL SERIES / SEASON ONE</div>
+              <h2 id="series-title">NBA Time Machine.</h2>
+            </div>
+            <a class="section-link" href="/series/nba-time-machine/">VIEW THE SERIES ↗</a>
+          </div>
+          <div class="series-intro">
+            <div>
+              <p class="series-kicker">TEN LEGENDS. ONE MODERN NBA.</p>
+              <p>What would the game's greatest players look like in 2025–26? We're taking it one legend at a time. Stockton is live. The next nine investigations are locked until release.</p>
+            </div>
+            <a class="series-explore" href="/series/nba-time-machine/">EXPLORE ALL EPISODES ↗</a>
+          </div>
+          <div class="episode-grid" aria-label="NBA Time Machine episode lineup">
+            {nbaTimeMachineEpisodes.map((episode) => (
+              episode.status === "published" ? (
+                <a class="episode-tile episode-live" href={episode.href} aria-label={`Read NBA Time Machine episode ${episode.number}: ${episode.name}`}>
+                  <span class="episode-top"><b>EP {episode.number}</b><span class="episode-status available">READ NOW ↗</span></span>
+                  <strong>{episode.name}</strong>
+                  <span class="episode-season">{episode.season}</span>
+                </a>
+              ) : (
+                <article class="episode-tile episode-locked" aria-label={`Episode ${episode.number}: ${episode.name}, locked`}>
+                  <span class="episode-top"><b>EP {episode.number}</b><span class="episode-status locked">🔒 LOCKED</span></span>
+                  <strong>{episode.name}</strong>
+                  <span class="episode-season">{episode.season}</span>
+                </article>
+              )
             ))}
           </div>
         </section>
