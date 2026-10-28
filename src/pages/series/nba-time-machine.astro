@@ -1,6 +1,8 @@
 ---
 import { nbaTimeMachineEpisodes } from "../../data/nbaTimeMachineSeries.js";
 const url = "https://anticipate-peak.vercel.app/series/nba-time-machine/";
+const publishedEpisodes = nbaTimeMachineEpisodes.filter(ep => ep.status === "published");
+const lockedEpisodes = nbaTimeMachineEpisodes.filter(ep => ep.status !== "published");
 ---
 <!doctype html>
 <html lang="en">
@@ -9,7 +11,7 @@ const url = "https://anticipate-peak.vercel.app/series/nba-time-machine/";
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#10110f" />
   <title>NBA Time Machine: The Series | Anticipate</title>
-  <meta name="description" content="Ten NBA legends, one modern season. Explore Anticipate's NBA Time Machine, starting with John Stockton, and browse the next nine episodes." />
+  <meta name="description" content="Ten NBA legends, one modern season. Explore Anticipate’s NBA Time Machine and the latest published episodes." />
   <link rel="canonical" href={url} />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Anticipate" />
@@ -67,7 +69,7 @@ const url = "https://anticipate-peak.vercel.app/series/nba-time-machine/";
         <h1>NBA Time<br /><span>Machine.</span></h1>
         <p class="dek">You know what made the legends great. But what would their games look like now? We took ten all-time names, picked one defining season for each and searched the 2025–26 NBA for the closest measurable match.</p>
         <p class="dek">Same game. Different eras. Sometimes the closest match tells you more about what makes a legend impossible to copy.</p>
-        <div class="meta"><span><strong>10</strong> EPISODES</span><span><strong>279</strong> MODERN PLAYERS</span><span><strong>2</strong> CURRENTLY AVAILABLE</span></div>
+        <div class="meta"><span><strong>{nbaTimeMachineEpisodes.length}</strong> EPISODES</span><span><strong>279</strong> MODERN PLAYERS</span><span><strong>{publishedEpisodes.length}</strong> CURRENTLY AVAILABLE</span></div>
       </div>
       <div class="emblem" role="img" aria-label="NBA Time Machine emblem, ten episodes">
         <small>ANTICIPATE / HISTORICAL COMPARISONS</small><strong>10.</strong><small>ONE MODERN NBA / TEN HISTORICAL GREATS</small>
@@ -75,8 +77,8 @@ const url = "https://anticipate-peak.vercel.app/series/nba-time-machine/";
     </section>
     <div class="divider"></div>
     <section aria-labelledby="episodes-title" id="episodes">
-      <div class="section-head"><div><div class="eyebrow">THE EPISODE GUIDE</div><h2 id="episodes-title">The lineup.</h2></div><p>The first two investigations are available now. Eight episodes remain locked until their articles are published.</p></div>
-      {nbaTimeMachineEpisodes.filter(ep=>ep.status==="published").map(ep=>(
+      <div class="section-head"><div><div class="eyebrow">THE EPISODE GUIDE</div><h2 id="episodes-title">The lineup.</h2></div><p>{publishedEpisodes.length} investigations available now. {lockedEpisodes.length} episodes remain locked until publication.</p></div>
+      {publishedEpisodes.map(ep=>(
         <a class="current" href={ep.href} aria-label={"Read NBA Time Machine episode "+ep.number+": "+ep.name}>
           <span class="big-no">{ep.number}</span>
           <div><span class="state">AVAILABLE NOW</span><h3>{ep.name}</h3><p>{ep.teaser ?? "Who comes closest to John Stockton? Explore five modern comparisons with interactive radar charts."}</p></div>
@@ -84,7 +86,7 @@ const url = "https://anticipate-peak.vercel.app/series/nba-time-machine/";
         </a>
       ))}
       <div class="grid" aria-label="Upcoming locked episodes">
-      {nbaTimeMachineEpisodes.filter(ep=>ep.status!=="published").map(ep=>(
+      {lockedEpisodes.map(ep=>(
         <article class="card" aria-label={"Episode "+ep.number+" "+ep.name+", locked"}>
           <div class="top"><span class="num">EPISODE {ep.number}</span><span class="lock">🔒 LOCKED</span></div>
           <div><h3>{ep.name}</h3><p>{ep.season} season</p></div>
