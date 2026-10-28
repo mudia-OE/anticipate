@@ -1,0 +1,237 @@
+---
+const pageUrl = 'https://anticipate-peak.vercel.app/research/isiah-thomas-time-machine/';
+const imageUrl = 'https://anticipate-peak.vercel.app/images/isiah-thomas-pistons.jpg';
+const isiah = {name:'Isiah Thomas',short:'Isiah',season:'1984–85',pts100:25.5,relative_ts:-1.4,ast_pct:47.9,trb_pct:6.1,usg_pct:24.0,stl_pct:2.8,blk_pct:0.4,height_cm:185,weight_lb:180,role:'Guard'};
+const stockton = {name:'John Stockton',short:'Stockton',season:'1989–90',pts100:23.0,relative_ts:7.0,ast_pct:57.4,trb_pct:4.1,usg_pct:20.6,stl_pct:3.5,blk_pct:0.4,height_cm:185,weight_lb:170,role:'Guard'};
+const players = [
+  {name:'Isaiah Collier',short:'Collier',team:'UTA',season:'2025–26',rank:1,distance:0.8110,pts100:21.3,relative_ts:-1.4,ast_pct:39.2,trb_pct:5.3,usg_pct:20.4,stl_pct:2.0,blk_pct:1.3,height_cm:193,weight_lb:210,role:'Guard',readout:'The clearest match among qualifying 2025–26 players. His efficiency sits right alongside Isiah’s, although Zeke created more and Collier is noticeably bigger.'},
+  {name:'Kevin Porter Jr.',short:'Porter Jr.',team:'MIL',season:'2025–26',rank:2,distance:0.8287,pts100:25.8,relative_ts:-1.4,ast_pct:33.8,trb_pct:8.9,usg_pct:24.3,stl_pct:3.2,blk_pct:1.5,height_cm:196,weight_lb:203,role:'Guard',readout:'Almost identical scoring per 100, usage and relative efficiency. The biggest separation is passing, plus the extra height and weight.'},
+  {name:'Ryan Rollins',short:'Rollins',team:'MIL',season:'2025–26',rank:3,distance:0.8707,pts100:26.5,relative_ts:0.2,ast_pct:27.1,trb_pct:8.0,usg_pct:24.2,stl_pct:2.3,blk_pct:1.3,height_cm:191,weight_lb:180,role:'Guard',readout:'The volume and physical measurements are close, but his share of assisted baskets falls well short of Isiah’s.'},
+  {name:"De'Aaron Fox",short:'Fox',team:'SAS',season:'2025–26',rank:4,distance:0.8743,pts100:28.8,relative_ts:-0.3,ast_pct:29.6,trb_pct:6.5,usg_pct:24.9,stl_pct:1.9,blk_pct:0.8,height_cm:191,weight_lb:185,role:'Guard',readout:'Fox gets close in guard-sized build and offensive responsibility, but takes on more scoring and far less playmaking.'},
+  {name:'Darius Garland',short:'Garland',team:'2TM',season:'2025–26',rank:5,distance:0.8774,pts100:30.6,relative_ts:0.1,ast_pct:34.9,trb_pct:4.5,usg_pct:27.4,stl_pct:1.6,blk_pct:0.6,height_cm:185,weight_lb:192,role:'Guard',readout:'The same listed height, with a more modern scoring load. Garland is closer physically than most, but the steals and assist share still differ.'}
+];
+// Out-of-sample research comparison, NOT part of the 2025–26 eligibility ranking.
+const trae = {name:'Trae Young',short:'Trae',team:'ATL',season:'2024–25',rank:null,distance:0.8093,pts100:31.4,relative_ts:-0.9,ast_pct:46.4,trb_pct:4.7,usg_pct:29.6,stl_pct:1.6,blk_pct:0.4,height_cm:188,weight_lb:164,role:'Guard',readout:'Trae nearly reproduces Isiah’s assist share while carrying more scoring usage. The lower steal rate and lighter frame tell a different story.'};
+const stats = [
+ {key:'pts100',label:'Points / 100',short:'PTS',low:0,high:48,suffix:''},
+ {key:'relative_ts',label:'Relative TS',short:'rTS',low:-10,high:15,suffix:' pp'},
+ {key:'ast_pct',label:'Assist percentage',short:'AST%',low:0,high:65,suffix:'%'},
+ {key:'trb_pct',label:'Rebound percentage',short:'TRB%',low:0,high:22,suffix:'%'},
+ {key:'usg_pct',label:'Usage percentage',short:'USG%',low:0,high:42,suffix:'%'},
+ {key:'stl_pct',label:'Steal percentage',short:'STL%',low:0,high:5,suffix:'%'},
+ {key:'blk_pct',label:'Block percentage',short:'BLK%',low:0,high:6,suffix:'%'}
+];
+const physical = [
+ {key:'height_cm',label:'Height',short:'HEIGHT',low:0,high:230,suffix:' cm'},
+ {key:'weight_lb',label:'Weight',short:'WEIGHT',low:0,high:330,suffix:' lb'},
+ {key:'role',label:'Guard category',short:'GUARD',low:0,high:1,suffix:''}
+];
+const clamp = (x) => Math.max(0,Math.min(1,x));
+const normalize = (p,f) => clamp(((f.key==='role'?(p.role==='Guard'?1:0):p[f.key])-f.low)/(f.high-f.low));
+const polygon = (p,axes,c=205,r=137) => axes.map((f,i)=>{let a=-Math.PI/2+i*2*Math.PI/axes.length;let rr=r*normalize(p,f);return `${(c+Math.cos(a)*rr).toFixed(1)},${(c+Math.sin(a)*rr).toFixed(1)}`;}).join(' ');
+const ring = (axes,scale,c=205,r=137) => axes.map((_,i)=>{let a=-Math.PI/2+i*2*Math.PI/axes.length;return `${(c+Math.cos(a)*r*scale).toFixed(1)},${(c+Math.sin(a)*r*scale).toFixed(1)}`;}).join(' ');
+const endpoint = (i,n,factor=1,c=205,r=137) => {let a=-Math.PI/2+i*2*Math.PI/n;return {x:c+Math.cos(a)*r*factor,y:c+Math.sin(a)*r*factor};};
+const scoreFmt = n => Number(n).toFixed(3);
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="theme-color" content="#10110f" />
+<title>Isiah Thomas Looks Surprisingly Familiar | NBA Time Machine 02 | Anticipate</title>
+<meta name="description" content="We compared Isiah Thomas' 1984–85 season to 279 NBA players from 2025–26, then tested Trae Young's 2024–25 season. Explore the interactive radar charts and learn what matches." />
+<link rel="canonical" href={pageUrl} />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Anticipate" />
+<meta property="og:title" content="Isiah Thomas Looks Surprisingly Familiar | Anticipate" />
+<meta property="og:description" content="Stockton was impossible to recreate. Zeke? A different story. Interactive statistical and physical comparisons, plus a Trae Young wildcard." />
+<meta property="og:url" content={pageUrl} />
+<meta property="og:image" content={imageUrl} />
+<meta name="twitter:card" content="summary_large_image" />
+<script type="application/ld+json" set:html={JSON.stringify({'@context':'https://schema.org','@type':'Article',headline:'Isiah Thomas Looks Surprisingly Familiar',image:[imageUrl],author:{'@type':'Person',name:'Divine Osas-Egbe'},publisher:{'@type':'Organization',name:'Anticipate',url:'https://anticipate-peak.vercel.app/'},datePublished:'2026-10-28',mainEntityOfPage:pageUrl,articleSection:'NBA Time Machine'})}></script>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;background:#10110f;color:#f2f4ed;--bg:#10110f;--lime:#d4ff45;--teal:#79c9c2;--paper:#f2f4ed;--muted:#adb3a7;--line:#353b31;--panel:#1a1e19}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0}a{color:inherit}a:hover{color:var(--lime)}a:focus-visible,button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}button{font:inherit;cursor:pointer}
+.shell{width:min(1110px,calc(100% - 42px));margin:0 auto}
+header{height:80px;display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:1px solid var(--line)}.brand{text-decoration:none;font-size:24px;font-weight:900;letter-spacing:-1.2px}.brand span{color:var(--lime)}.back{font-size:11px;text-decoration:none;color:#b3b9af;letter-spacing:1px}
+.eyebrow{color:var(--lime);font-size:11px;font-weight:800;letter-spacing:1.6px}.hero{padding:59px 0 37px}.series{display:inline-flex;gap:12px;align-items:center;letter-spacing:1.1px;font-size:10px;color:#c5cabd}.series b{padding:6px 9px;color:#10120e;background:var(--lime)}
+h1{font-size:clamp(47px,7.8vw,90px);font-weight:900;letter-spacing:-5px;line-height:.98;max-width:1050px;margin:24px 0 20px}h1 em{font-style:normal;color:var(--lime)}.dek{max-width:740px;font-size:19px;line-height:1.65;color:#c4cabe;margin:0 0 22px}.byline{display:flex;gap:15px 24px;flex-wrap:wrap;align-items:center;color:#aeb4a8;font-size:10px;letter-spacing:1px;margin-bottom:30px}.byline strong{color:#eee}
+.lead-image{margin:0;border:1px solid #454b3b;background:#20231f;overflow:hidden}.lead-image img{display:block;width:100%;aspect-ratio:597/335;object-fit:cover;object-position:center 27%;max-height:530px}.lead-image figcaption{font-size:10px;color:#aeb5a9;padding:10px 14px;border-top:1px solid var(--line);letter-spacing:.35px}
+.stats-strip{margin-top:25px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--line)}.stat{padding:22px 19px;border-right:1px solid var(--line)}.stat:last-child{border-right:0}.stat strong{display:block;color:var(--lime);font-size:clamp(29px,4.6vw,49px);letter-spacing:-1.7px}.stat span{display:block;font-size:10px;color:#a9b0a4;line-height:1.6;margin-top:3px;letter-spacing:.7px}
+.body-grid{display:grid;grid-template-columns:minmax(0,750px) minmax(180px,1fr);gap:65px;margin:62px 0 28px}.prose{font-size:16.5px;line-height:1.87;color:#cdd3c6}.prose p{margin:0 0 23px}.prose strong{color:#fff}.prose .opening{font-size:23px;color:#fff;line-height:1.53}.prose h2{font-size:clamp(29px,4vw,40px);line-height:1.18;color:#f4f6ef;letter-spacing:-1.5px;margin:58px 0 24px}.prose h2:first-child{margin-top:0}.section-no{font-size:11px;font-weight:800;letter-spacing:1.8px;color:var(--lime);display:block;margin-bottom:13px}.pull{border-left:3px solid var(--lime);background:#212819;padding:18px 25px;margin:30px 0;color:#f4f6ef;font-size:20px;line-height:1.5}
+.sidebar{padding-top:6px}.sidebox{border-top:1px solid var(--line);padding:20px 0}.sidebox h3{font-size:11px;letter-spacing:1.4px;margin:0 0 9px}.sidebox p{margin:0;color:#aeb6a8;font-size:12px;line-height:1.7}.sidebox .big{font-size:40px;letter-spacing:-1.8px;color:var(--lime);font-weight:900;display:block;margin:7px 0}.sidebox a{font-size:12px;line-height:1.8;text-decoration:underline;text-underline-offset:3px}
+.compare-small{margin:34px 0;border:1px solid var(--line);padding:21px;background:#181c17}.compare-small h3{font-size:18px;letter-spacing:-.3px;color:#fff;margin:0 0 17px}.compare-small .tiny{font-size:11px;color:#aeb7aa;line-height:1.65;margin:16px 0 0}.mini-line{display:grid;grid-template-columns:75px 1fr 1fr;align-items:center;gap:13px;padding:11px 0;border-bottom:1px solid #363d33;font-size:12px}.mini-line:last-of-type{border:0}.mini-line b{color:var(--lime)}.mini-line strong{text-align:right;color:var(--teal)}
+.interactive{background:#191d18;border:1px solid #49523e;padding:28px;margin:51px 0 61px}.block-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}.block-head h2{margin:10px 0;font-size:clamp(29px,4vw,40px);letter-spacing:-1.4px}.block-head p{margin:0;color:#b4bbae;font-size:13px;line-height:1.7;max-width:620px}.model-tag{white-space:nowrap;border:1px solid #536641;color:var(--lime);font-size:10px;padding:9px 10px;letter-spacing:.6px}
+.picker{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:25px 0 22px}.pick{border:1px solid #40473b;background:#20251e;color:#e5e8df;padding:13px 10px;text-align:left;min-height:102px}.pick:hover{border-color:#99ac65}.pick[aria-pressed="true"]{background:#2d381e;border-color:var(--lime)}.pick small{color:#b6c5a8;font-size:10px;letter-spacing:.7px;display:block}.pick strong{display:block;margin:11px 0 5px;font-size:13px;line-height:1.2}.pick em{font-style:normal;color:var(--lime);font-weight:700;font-size:13px}
+.comparison-head{border-top:1px solid var(--line);padding-top:21px;display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap}.comparison-head h3{font-size:24px;letter-spacing:-1px;margin:8px 0 0}.legend-key{display:flex;gap:15px;flex-wrap:wrap;font-size:11px;color:#c3c9bf}.legend-key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:7px;vertical-align:middle}.charts{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin:17px 0}.chart-panel{background:#121511;border:1px solid #3d453a;padding:18px 12px}.chart-panel h4{font-size:14px;letter-spacing:.1px;margin:0 0 4px}.chart-panel .sub{color:#abb6a5;font-size:11px}.radar{display:block;width:100%;height:auto;max-height:400px}.radar .ring{stroke:#454d41;stroke-width:1;fill:none}.radar .axis{stroke:#3b473b;stroke-width:1.2}.radar text{font-size:10px;font-family:Arial,Helvetica,sans-serif;font-weight:700;fill:#d0dac9}.radar .legend-shape{fill:#d4ff4530;stroke:#d4ff45;stroke-width:3;stroke-linejoin:round}.radar .match-shape{fill:#79c9c230;stroke:#79c9c2;stroke-width:3;stroke-linejoin:round}.chart-note{color:#aab5a5;font-size:11px;line-height:1.65;margin:4px 2px}
+.insight{padding:16px 19px;border:1px solid #3e5a54;background:#1d2b27;color:#dde8dd;font-size:13px;line-height:1.7;margin:15px 0 22px}.insight b{color:var(--teal)}
+.stat-table{width:100%;border-collapse:collapse;font-size:12px}.stat-table th,.stat-table td{padding:10px 9px;border-bottom:1px solid #363f35;text-align:right}.stat-table th:first-child,.stat-table td:first-child{text-align:left}.stat-table th{color:#abb6a5;font-weight:500;font-size:11px}.stat-table td:nth-child(2){color:var(--lime)}.stat-table td:nth-child(3){color:var(--teal)}.overflow{overflow-x:auto}
+.ranking{border:1px solid var(--line);background:#171b16;padding:23px;margin:26px 0}.ranking h3{font-size:18px;margin:0 0 9px;color:#fff}.rankrow{display:grid;grid-template-columns:31px 1fr 68px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid #313a30;font-size:13px}.rankrow:last-child{border-bottom:0}.rankrow .num{color:var(--lime);font-weight:800}.rankrow .score{color:var(--teal);font-weight:800;text-align:right}.rankrow span{color:#dbe2d7}.fine{color:#a7b1a4;font-size:11px;line-height:1.7}
+.bonus{border:1px solid #475d57;background:linear-gradient(135deg,#1d2a25,#161d19);padding:28px;margin:53px 0}.bonus .kicker{font-size:10px;font-weight:800;letter-spacing:1.6px;color:var(--teal)}.bonus h2{font-size:clamp(30px,4vw,44px);letter-spacing:-1.6px;margin:15px 0 18px;line-height:1.12}.bonus p{max-width:760px;color:#cbd5cb;font-size:15px;line-height:1.8}.bonus .large-score{font-size:clamp(42px,6vw,76px);font-weight:900;color:var(--teal);letter-spacing:-2px}.bonus .small-score{font-size:12px;color:#bac6ba}.bonus .score-pair{display:flex;gap:25px;align-items:end;flex-wrap:wrap;margin:22px 0}.bonus .score-pair .vs{font-size:13px;color:#c4c9be;padding-bottom:16px}.bonus .bonus-visuals{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}.bonus .bonus-visuals>div{background:#101612;border:1px solid #384e43;padding:16px;min-width:0}.bonus h3{font-size:14px;margin:0;color:#fff}.bonus .bonus-shape{width:100%;max-height:380px}.bonus .mini-line{grid-template-columns:98px 1fr 1fr}.bonus .line-head{font-size:11px;color:#a6b6aa;padding-bottom:9px;border-bottom:1px solid #3b5143}.bonus .diff{font-size:12px;color:#adbbb0}
+.conclusion{font-size:18px;line-height:1.77;color:#d7dfd2;max-width:770px}.conclusion strong{color:#fff}.next{margin:40px 0;padding:27px;border:1px solid #5a6e3f;background:linear-gradient(125deg,#27321c,#1b2318);text-decoration:none;display:block}.next:hover{border-color:var(--lime);color:inherit}.next span{color:var(--lime);font-size:11px;font-weight:800;letter-spacing:1.3px}.next h3{font-size:24px;letter-spacing:-.7px;margin:12px 0}.next p{font-size:12px;color:#bec9b5;margin:0}
+.methods{border-top:1px solid var(--line);padding-top:23px;margin:44px 0;color:#afbaad;font-size:12px;line-height:1.8}.methods h3{font-size:14px;color:#fff;margin:0 0 10px}.methods p{margin:0 0 13px}.methods a{color:var(--lime)}
+footer{border-top:1px solid var(--line);padding:28px 0 44px;margin-top:55px;display:flex;justify-content:space-between;align-items:center;gap:20px;font-size:11px;color:#a7b1a6}
+@media(max-width:940px){.body-grid{grid-template-columns:1fr;gap:16px}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:20px}.charts{grid-template-columns:1fr 1fr}.interactive{padding:20px}}
+@media(max-width:670px){.shell{width:calc(100% - 26px)}header{height:66px}h1{font-size:clamp(45px,11vw,68px);letter-spacing:-2.9px}.hero{padding-top:43px}.dek{font-size:16px}.stats-strip{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}.stat{padding:15px}.body-grid{margin-top:45px}.prose{font-size:15.5px}.prose .opening{font-size:21px}.prose h2{margin-top:43px}.sidebar{grid-template-columns:1fr}.picker{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.pick{min-height:82px}.charts,.bonus .bonus-visuals{grid-template-columns:1fr}.block-head{flex-direction:column;gap:12px}.interactive,.bonus{padding:15px}.bonus .large-score{font-size:55px}.hero .lead-image{margin-top:0}footer{flex-direction:column;align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header><a class="brand" href="/">anticipate<span>.</span></a><a class="back" href="/series/nba-time-machine/">NBA TIME MACHINE / THE SERIES ↗</a></header>
+<main>
+<section class="hero">
+<div class="series"><b>02 / 10</b> NBA TIME MACHINE · EPISODE TWO</div>
+<div class="eyebrow" style="margin-top:27px">ANTICIPATE ORIGINAL RESEARCH / THE MODERN POINT GUARD</div>
+<h1>Isiah Thomas looks <em>surprisingly familiar.</em></h1>
+<p class="dek">John Stockton was almost impossible to replicate. Zeke looked like he might be a different story. We went looking for the closest version of him in the modern NBA, and found a little more than we expected.</p>
+<div class="byline"><span>BY <strong>DIVINE OSAS-EGBE</strong></span><span><strong>1984–85</strong> VS. <strong>2025–26</strong></span><span><strong>NBA TIME MACHINE 02</strong></span></div>
+<figure class="lead-image"><img src="/images/isiah-thomas-pistons.jpg" alt="Isiah Thomas holding a basketball in a Detroit Pistons blue number 11 jersey" width="597" height="335" loading="eager" fetchpriority="high" /><figcaption>Isiah Thomas, Detroit Pistons. Photograph supplied by the author; photographer credit to be confirmed.</figcaption></figure>
+</section>
+<div class="stats-strip" aria-label="Isiah Thomas 1984–85 season highlights">
+ <div class="stat"><strong>21.2</strong><span>POINTS PER GAME</span></div>
+ <div class="stat"><strong>13.9</strong><span>ASSISTS PER GAME<br/>NBA LEADER</span></div>
+ <div class="stat"><strong>2.3</strong><span>STEALS PER GAME</span></div>
+ <div class="stat"><strong>47.9%</strong><span>ASSIST PERCENTAGE</span></div>
+</div>
+<div class="body-grid">
+<article class="prose">
+<p class="opening">Last time, we went looking for a modern John Stockton. We found a few players who shared parts of his game, but nobody who really brought the whole thing together.</p>
+<p>Stockton's numbers were oddly specific. A staggering amount of playmaking, elite efficiency for his era, and plenty of activity on defense, all from a relatively small point guard. You can find pieces of that combination today. Finding all of them in one player proved much harder.</p>
+<p>Isiah Thomas felt like a different challenge.</p>
+<p>Watch Zeke, and you can see a type of point guard that looks familiar: someone who can run the entire offense, but also decide, without much warning, that it's time to get his own shot. Plenty of modern guards are asked to do some version of that.</p>
+<p>So is Isiah easier to match than Stockton? And if he is, who actually comes closest?</p>
+<h2><span class="section-no">01 / STARTING IN DETROIT</span>The version of Zeke we're testing</h2>
+<p>For this episode, we're using Isiah's <strong>1984–85 season</strong>, not the title-winning Detroit teams that came later. At 23, he averaged 21.2 points, an NBA-leading 13.9 assists, and 2.3 steals across 81 games. That's a lot of responsibility for a player still early in his career.</p>
+<p>His advanced numbers are what make this investigation interesting. He assisted on an estimated <strong>47.9% of his teammates' baskets</strong> while on the floor, with a 24.0% usage rate. He also produced 25.5 points per 100 possessions.</p>
+<p>So yes, he was an extraordinary passer. But he also had more scoring responsibility than the Stockton season we examined, and he wasn't nearly as efficient relative to his league.</p>
+<div class="compare-small">
+ <h3>Two very different 6-foot-1 guards</h3>
+ <div class="mini-line"><span>Metric</span><span style="color:var(--lime)">STOCKTON '90</span><strong>ISIAH '85</strong></div>
+ {[
+  ['PTS / 100','23.0','25.5'],['USG%','20.6%','24.0%'],['AST%','57.4%','47.9%'],['rTS','+7.0 pp','−1.4 pp'],['STL%','3.5%','2.8%'],['Listed weight','170 lb','180 lb']
+ ].map(row=><div class="mini-line"><span>{row[0]}</span><b>{row[1]}</b><strong>{row[2]}</strong></div>)}
+ <p class="tiny">The scoring and usage gap is real, but it doesn't mean Stockton was only a passer. He averaged 17.2 points per game in his selected season. These are two distinct ways of running an offense.</p>
+</div>
+<p>That efficiency difference stands out. Isiah's true shooting was 52.9%, about 1.4 percentage points below the NBA's 1984–85 average. Stockton, in 1989–90, was seven points above his league average. We're not saying one number explains every part of their games. It does tell us the model is searching for a different profile this time.</p>
+<div class="pull">Stockton was a playmaker who scored efficiently. Isiah was a playmaker who also took on more of the scoring burden.</div>
+<h2><span class="section-no">02 / THE 2025–26 SEARCH</span>The closest modern match is another Isaiah</h2>
+<p>We ran Isiah against the same 279 players from the 2025–26 season who logged at least 1,000 minutes. No career averages, no highlight-reel scouting grades. Just the same seven advanced statistical measures, plus height, weight, and a broad positional group.</p>
+<p>The top result was <strong>Isaiah Collier</strong>.</p>
+<p>I know. One Isiah, one Isaiah. But the names are the least interesting part of it.</p>
+<p>Collier finished with an overall distance of <strong>0.811</strong>, and the strongest connection is something that worked against him in the Stockton episode: scoring efficiency. He and Zeke were both 1.4 percentage points below their respective league-average true shooting marks. Against Stockton's +7.0, that was a huge gap. Against Isiah, it's an exact match in our rounded data.</p>
+<p>Collier also created plenty of offense for teammates, posting a 39.2% assist percentage. It's not Isiah's 47.9%, but it's much closer than many modern guards get. Their steal rates were 2.0% and 2.8%, respectively.</p>
+<p>The physical comparison is where it gets less convincing. Collier is listed at 193 cm and 210 pounds. Zeke was listed at 185 cm and 180. Thirty pounds and eight centimetres aren't small differences for two guards.</p>
+</article>
+<aside class="sidebar" aria-label="Research notes">
+ <div class="sidebox"><h3>THE SAMPLE</h3><span class="big">279</span><p>Modern players with at least 1,000 minutes in 2025–26, with traded-player seasons combined into one row.</p></div>
+ <div class="sidebox"><h3>MODEL WEIGHTS</h3><span class="big">70 / 20 / 10</span><p>Statistics / physical profile / position. Lower distance means a closer measured profile, not greater basketball ability.</p></div>
+ <div class="sidebox"><h3>LAST EPISODE</h3><p>Stockton's closest match scored 1.300, meaning Isiah's closest 2025–26 match is substantially nearer under these exact modeling choices.</p><p style="margin-top:10px"><a href="/research/stockton-time-machine/">Revisit Episode 01 ↗</a></p></div>
+</aside>
+</div>
+<section class="interactive" id="compare" aria-label="Interactive statistical and physical radar comparisons">
+ <div class="block-head"><div><div class="eyebrow">03 / EXPLORE THE NUMBERS</div><h2>Make the comparison yourself.</h2><p>Select any of Isiah's five closest eligible matches. Both radar charts, the player measurements and the exact numbers update together.</p></div><span class="model-tag">2025–26 QUALIFIED PLAYERS ONLY</span></div>
+ <div class="picker" role="group" aria-label="Choose a modern NBA player">
+ {players.map((p,i)=><button class="pick" data-pick={i} type="button" aria-pressed={i===0?'true':'false'}><small>#{i+1} / {p.team}</small><strong>{p.name}</strong><em>{scoreFmt(p.distance)}</em></button>)}
+ </div>
+ <div class="comparison-head"><div><div class="eyebrow">ISIAH THOMAS (1984–85) VS.</div><h3 id="current-name">Isaiah Collier (2025–26)</h3></div><div class="legend-key"><span><i style="background:var(--lime)"></i>ISIAH</span><span><i style="background:var(--teal)"></i>MODERN MATCH</span></div></div>
+ <div class="charts">
+  <div class="chart-panel"><h4>Statistical fingerprint</h4><div class="sub">Seven measures, each on the same fixed scale</div>
+    <svg class="radar" viewBox="0 0 410 410" role="img" aria-label="Interactive radar chart comparing Isiah and a modern player's scoring, efficiency, passing, rebounding, usage, steals and blocks">
+    {Array.from({length:5},(_,i)=><polygon class="ring" points={ring(stats,(i+1)/5)} />)}
+    {stats.map((f,i)=>{const line=endpoint(i,stats.length);const label=endpoint(i,stats.length,1.21);return <g><line class="axis" x1="205" y1="205" x2={line.x} y2={line.y}/><text x={label.x} y={label.y} text-anchor="middle" dominant-baseline="middle">{f.short}</text></g>})}
+    <polygon class="legend-shape" points={polygon(isiah,stats)} /><polygon class="match-shape" id="modern-stats-shape" points={polygon(players[0],stats)} />
+    </svg>
+    <p class="chart-note">The radar uses fixed display scales, not the model's standardized distance. Bigger shapes aren't automatically better, and rTS can be negative.</p>
+  </div>
+  <div class="chart-panel"><h4>Physical profile</h4><div class="sub">Height, weight, and position category</div>
+    <svg class="radar" viewBox="0 0 410 410" role="img" aria-label="Interactive physical radar chart comparing height, listed weight and guard category">
+    {Array.from({length:5},(_,i)=><polygon class="ring" points={ring(physical,(i+1)/5)} />)}
+    {physical.map((f,i)=>{const line=endpoint(i,physical.length);const label=endpoint(i,physical.length,1.20);return <g><line class="axis" x1="205" y1="205" x2={line.x} y2={line.y}/><text x={label.x} y={label.y} text-anchor="middle" dominant-baseline="middle">{f.short}</text></g>})}
+    <polygon class="legend-shape" points={polygon(isiah,physical)} /><polygon class="match-shape" id="modern-physical-shape" points={polygon(players[0],physical)} />
+    </svg>
+    <p class="chart-note"><b>Isiah:</b> 185 cm / 180 lb. <b id="match-measures">Collier: 193 cm / 210 lb</b>. The guard axis is categorical; it does not measure athleticism. Listed size may not match playing-season weight.</p>
+  </div>
+ </div>
+ <div class="insight" aria-live="polite"><b>What to notice:</b> <span id="match-insight">{players[0].readout}</span></div>
+ <div class="overflow"><table class="stat-table"><thead><tr><th>Measure</th><th>Isiah '85</th><th id="column-name">Collier '26</th></tr></thead><tbody>{stats.map(f=><tr><td>{f.label}</td><td>{Number(isiah[f.key]).toFixed(1)}{f.suffix}</td><td data-stat={f.key}>{Number(players[0][f.key]).toFixed(1)}{f.suffix}</td></tr>)}</tbody></table></div>
+ <p class="fine">All five cards show players from the original 2025–26 eligibility pool. Trae Young appears separately below as a deliberately out-of-sample comparison.</p>
+</section>
+<div class="body-grid" style="margin-top:0"><article class="prose">
+<h2><span class="section-no">04 / MORE THAN ONE ANSWER</span>Porter looks closer in different ways</h2>
+<p>Kevin Porter Jr. finished second at 0.829, just behind Collier. If you focus on points per 100 possessions, usage, relative efficiency, and steals, you could make a pretty convincing case for him.</p>
+<p>Isiah: 25.5 points per 100 and 24.0% usage. Porter: 25.8 and 24.3%. Both finished with an rTS of −1.4 percentage points. Their steal percentages were 2.8 and 3.2. It's an oddly close group of numbers.</p>
+<p>But Porter's assist rate was 33.8%, well below Zeke's 47.9%, and he's a bigger guard. Once again, the model finds resemblance without finding a duplicate.</p>
+<p>Then there's Ryan Rollins in third at 0.871. His scoring and usage look close enough, and he's nearly the same weight as Isiah. But his 27.1% assist rate tells you how different their offensive responsibilities were.</p>
+<p>Fourth-place De'Aaron Fox (0.874) and fifth-place Darius Garland (0.877) round out the group. Both produced more points per 100 possessions than Isiah, with lower assist rates. It's a recurring trade-off in these comparisons: we keep finding guards who look familiar as scorers, but not quite as creators.</p>
+<div class="ranking"><h3>The original top five</h3>{players.map((p,i)=><div class="rankrow"><span class="num">{String(i+1).padStart(2,'0')}</span><span>{p.name}</span><span class="score">{scoreFmt(p.distance)}</span></div>)}<p class="fine" style="margin:14px 0 0">Distance, not percentage similarity. Lower is closer under the 70/20/10 model.</p></div>
+<p>Still, Isiah's best eligible match at 0.811 is much closer than Stockton's 1.300. With exactly the same model and modern sample, the general idea holds: <strong>Isiah's measurable profile translates more naturally to the modern player pool.</strong></p>
+<p>But there's one name we haven't tested yet.</p>
+</article><aside class="sidebar"><div class="sidebox"><h3>A SMALL DISTANCE IS NOT A TIE</h3><p>Model differences can move when you change the weighting, physical listings or chosen season. Don't read 0.811 as a precise measure of playing style.</p></div><div class="sidebox"><h3>MODEL LIMITATION</h3><p>STL% is defensive activity, not a verdict on who is the better defender. A higher usage rate isn't a complete measure of how aggressive a player looks with the ball.</p></div></aside></div>
+<section class="bonus" id="trae">
+ <div class="kicker">05 / THE WILDCARD · 2024–25, NOT PART OF THE ORIGINAL RANKING</div>
+ <h2>What about Trae Young?</h2>
+ <p>This is the comparison I kept coming back to. Trae isn't in the official 2025–26 top five because he didn't reach our 1,000-minute cutoff that season. But go back one year, to 2024–25, and his numbers start to look remarkably familiar.</p>
+ <p>Trae averaged 31.4 points per 100 possessions, created an estimated 46.4% of his teammates' baskets, and had a 29.6% usage rate. Zeke's assist percentage was 47.9%. That's a gap of just 1.5 percentage points, much smaller than what we saw with any of our qualifying top-five matches.</p>
+ <div class="score-pair"><div><div class="kicker">TRAE '24–25 VS. ISIAH '84–85</div><div class="large-score">0.809</div><div class="small-score">OUT-OF-SAMPLE COMPARISON DISTANCE</div></div><div class="vs">VS.</div><div><div class="kicker">BEST 2025–26 ELIGIBLE MATCH · COLLIER</div><div class="large-score" style="color:var(--lime)">0.811</div><div class="small-score">QUALIFIED-SEASON DISTANCE</div></div></div>
+ <p><strong style="color:#fff">That's almost a tie.</strong> Trae just edges Collier using the same modern baseline, with his NBA-listed height of 188 cm and weight of 164 pounds. The margin is roughly 0.002 distance units, far too small to make a grand claim about who's the “real” Isiah.</p>
+ <div class="bonus-visuals">
+   <div><h3>Isiah vs. Trae: statistical radar</h3><svg class="radar bonus-shape" viewBox="0 0 410 410" role="img" aria-label="Radar chart comparing Isiah Thomas 1984–85 to Trae Young 2024–25">
+    {Array.from({length:5},(_,i)=><polygon class="ring" points={ring(stats,(i+1)/5)} />)}
+    {stats.map((f,i)=>{const line=endpoint(i,stats.length);const label=endpoint(i,stats.length,1.21);return <g><line class="axis" x1="205" y1="205" x2={line.x} y2={line.y}/><text x={label.x} y={label.y} text-anchor="middle" dominant-baseline="middle">{f.short}</text></g>})}
+    <polygon class="legend-shape" points={polygon(isiah,stats)} /><polygon class="match-shape" points={polygon(trae,stats)} />
+   </svg><div class="legend-key" style="justify-content:center"><span><i style="background:var(--lime)"></i>ISIAH</span><span><i style="background:var(--teal)"></i>TRAE</span></div></div>
+   <div><h3>Where they're close, where they're not</h3><div class="mini-line line-head"><span>Metric</span><span style="color:var(--lime)">ISIAH</span><strong>TRAE</strong></div>
+   {[
+    ['AST%','47.9%','46.4%'],['PTS/100','25.5','31.4'],['USG%','24.0%','29.6%'],['rTS','−1.4 pp','−0.9 pp'],['STL%','2.8%','1.6%'],['Height','185 cm','188 cm'],['Weight','180 lb','164 lb']
+   ].map(row=><div class="mini-line"><span>{row[0]}</span><b>{row[1]}</b><strong>{row[2]}</strong></div>)}
+   <p class="diff">One is a relatively small, lighter modern scoring creator. The other is a high-assist guard with substantially more steals and a lower scoring usage rate.</p></div>
+ </div>
+ <p>The similarities are real. Both generated extraordinary assist numbers, and both scored at slightly below their respective league-average true shooting rates. But Trae took on more shooting responsibility, while Isiah posted a substantially higher steal percentage. That last number doesn't settle the defensive debate by itself.</p>
+ <p>For accuracy, we calculated Trae's relative true shooting at approximately −0.9 percentage points using his 56.7% TS and the NBA's 57.6% league mark in 2024–25. That corrects an earlier estimate of −1.1. Importantly, Trae's tiny advantage over Collier is still present after that adjustment.</p>
+</section>
+<div class="body-grid" style="margin-top:0"><article class="prose">
+<h2><span class="section-no">06 / THE POINT</span>Isiah feels familiar. That doesn't make him ordinary.</h2>
+<p>After Stockton, I half expected another legend with a statistical profile nobody in the modern game could touch. Isiah gave us something more recognizable.</p>
+<p>Collier resembles his combination of passing and below-average relative efficiency. Porter comes astonishingly close in scoring volume, steals and usage. Rollins, Fox and Garland each carry pieces of the offensive profile. Then Trae, from a different modern season, gets within touching distance of Zeke's assist rate while scoring far more aggressively.</p>
+<p>Maybe that tells us something about how the position has evolved. The modern NBA asks its lead guards to create for everyone else and threaten the defense themselves. Isiah was doing a version of both more than forty years ago.</p>
+<p>But I'd be careful calling him a modern point guard dropped into the past. Different rules, spacing, teammates and offensive priorities shape the numbers. And no radar chart measures how a defense reacts when a player changes speed or picks the perfect moment to attack.</p>
+<p><strong>The model's official answer is Isaiah Collier. Trae Young is the fascinating outside challenger.</strong> Neither is a substitute for Zeke, but both help explain why his game still feels so recognizable.</p>
+<p>Stockton was hard to find because his exact combination barely existed in our sample. Isiah was easier to find because his blend of scoring and playmaking is still at the centre of what many guards are asked to do.</p>
+<p><strong>And that might be the more interesting kind of similarity.</strong></p>
+<div class="methods"><h3>THE FINE PRINT / SOURCES</h3>
+ <p><strong>Sample:</strong> 279 NBA players in 2025–26 with at least 1,000 minutes; one combined row for traded players. Historical reference: Isiah Thomas's 1984–85 regular season. Trae's 2024–25 season is a separately introduced extra comparison, not a 2025–26 ranked entry.</p>
+ <p><strong>Model:</strong> seven standardized statistics averaged into a squared statistical distance (70% weight), listed height and weight (20%), and guard/forward/center position mismatch (10%). Overall distance is the square root of the weighted squared components. Modern z-score standard deviations come from the same 279-player pool for every comparison. This is not an estimate of skill, greatness, or percentage similarity.</p>
+ <p><strong>Chart note:</strong> the radars use fixed visual scales, not the z-score metric; relative TS is player TS minus that season's league TS in percentage points. 3P% is left out because radically different shooting volume and shot selection make simple cross-era accuracy comparisons misleading.</p>
+ <p><strong>Research sources:</strong> <a href="https://www.basketball-reference.com/players/t/thomais01.html" target="_blank" rel="noopener noreferrer">Isiah historical stats</a> · <a href="https://www.nba.com/news/detroit-pistons-single-season-assists-per-game-leaders" target="_blank" rel="noopener noreferrer">NBA: Detroit assist history</a> · <a href="https://www.basketball-reference.com/players/y/youngtr01.html" target="_blank" rel="noopener noreferrer">Trae Young 2024–25 stats</a> · <a href="https://www.nba.com/player/1629027/trae-young/bio" target="_blank" rel="noopener noreferrer">Trae listed size</a> · <a href="https://www.basketball-reference.com/leagues/NBA_stats_totals.html" target="_blank" rel="noopener noreferrer">2024–25 league TS</a> · <a href="https://github.com/mudia-OE/anticipate-nba-time-machine" target="_blank" rel="noopener noreferrer">NBA Time Machine datasets, R code and methodology</a>.</p>
+ <p><strong>Editorial limits:</strong> historical values have been checked for this article against the published source tables, but our wider ten-player database is still undergoing review. Listed heights and weights may not represent a particular season. Changing the model weights or season choice can change the rankings. Photo supplied by the author; photographer credit pending.</p>
+</div>
+<a class="next" href="/series/nba-time-machine/"><span>NBA TIME MACHINE / NEXT IN THE SERIES</span><h3>Ten legends. Ten different conversations.</h3><p>Explore the full series and see who's next →</p></a>
+</article><aside class="sidebar"><div class="sidebox"><h3>TRY A DIFFERENT MATCH</h3><p>Don't just take the ranking. Go back to the radars and choose what stands out to you: scoring, passing, steals, or size.</p><p style="margin-top:10px"><a href="#compare">Open the interactive charts ↑</a></p></div><div class="sidebox"><h3>MORE FROM ANTICIPATE</h3><p>Want a different kind of historical outlier?</p><p style="margin-top:10px"><a href="/research/stockton-time-machine/">Read the John Stockton episode ↗</a></p></div></aside></div>
+</main>
+<footer><a class="brand" href="/">anticipate<span>.</span></a><span>NBA TIME MACHINE / EPISODE 02</span><span>© 2026 ANTICIPATE · ORIGINAL RESEARCH</span></footer>
+</div>
+<script type="application/json" id="zeke-data" set:html={JSON.stringify({isiah,players,stats,physical})}></script>
+<script is:inline>
+(() => {
+  const d=document.getElementById('zeke-data');if(!d)return;
+  const {players,stats,physical}=JSON.parse(d.textContent||'{}');
+  const buttons=[...document.querySelectorAll('[data-pick]')];
+  function coords(p,axes){return axes.map((f,i)=>{const v=f.key==='role'?(p.role==='Guard'?1:0):p[f.key];const normalized=Math.max(0,Math.min(1,(v-f.low)/(f.high-f.low)));const angle=-Math.PI/2+i*2*Math.PI/axes.length;const r=137*normalized;return (205+Math.cos(angle)*r).toFixed(1)+','+(205+Math.sin(angle)*r).toFixed(1)}).join(' ')}
+  function choose(i){
+    const p=players[i];if(!p)return;
+    for(let j=0;j<buttons.length;j++)buttons[j].setAttribute('aria-pressed',j===i?'true':'false');
+    const name=document.getElementById('current-name');if(name)name.textContent=p.name+' (2025–26)';
+    const sp=document.getElementById('modern-stats-shape'),ph=document.getElementById('modern-physical-shape');
+    if(sp)sp.setAttribute('points',coords(p,stats));if(ph)ph.setAttribute('points',coords(p,physical));
+    const measures=document.getElementById('match-measures');if(measures)measures.textContent=p.short+': '+p.height_cm+' cm / '+p.weight_lb+' lb';
+    const insight=document.getElementById('match-insight');if(insight)insight.textContent=p.readout;
+    const col=document.getElementById('column-name');if(col)col.textContent=p.short+" '26";
+    for(const el of document.querySelectorAll('[data-stat]')){const f=stats.find(x=>x.key===el.dataset.stat);if(f)el.textContent=Number(p[f.key]).toFixed(1)+f.suffix;}
+  }
+  for(let i=0;i<buttons.length;i++)buttons[i].addEventListener('click',()=>choose(i));
+})();
+</script>
+</body>
+</html>
