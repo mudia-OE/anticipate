@@ -2,15 +2,13 @@
 ---
 import { nbaTimeMachineEpisodes } from "../data/nbaTimeMachineSeries.js";
 
-const stories = [
-  {
-    category: "NBA TIME MACHINE",
-    number: "02",
-    title: "Isiah Thomas Looks Surprisingly Familiar.",
-    description: "Who comes closest to Zeke? Five modern matches, two interactive radars and one Trae Young wildcard.",
-    type: "PUBLISHED RESEARCH",
-    href: "/research/isiah-thomas-time-machine/"
-  },
+import { publishedResearch } from "../data/researchArticles.js";
+
+const [featuredArticle, ...olderArticles] = publishedResearch;
+const publishedEpisodeCount = nbaTimeMachineEpisodes.filter(episode => episode.status === "published").length;
+const upcomingEpisodeCount = nbaTimeMachineEpisodes.length - publishedEpisodeCount;
+
+const upcomingStories = [
   {
     category: "DEFENSIVE ANALYSIS",
     number: "01",
@@ -25,6 +23,14 @@ const stories = [
     description: "Examining Carmelo Anthony's place on the all-time scoring list, beyond just his career point total.",
     type: "RESEARCH"
   }
+];
+
+const archiveStories = [
+  ...olderArticles.map(article => ({
+    ...article,
+    type: "PUBLISHED RESEARCH"
+  })),
+  ...upcomingStories
 ];
 ---
 
@@ -438,6 +444,31 @@ const stories = [
       @media(max-width:760px) {.episode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.series-section{padding-top:55px}.series-intro{padding:20px}.main-feature{padding:27px 23px}.main-feature h3{font-size:34px}.second-feature{padding:24px 23px}.stories{grid-template-columns:1fr}}
       @media(max-width:400px) {.episode-tile{padding:13px;min-height:149px}.episode-tile strong{font-size:17px}.episode-status{font-size:8px}}
 
+
+      /* Homepage editorial priority: newest research, featured series, then archives. */
+      .featured-series-banner{
+        display:grid;grid-template-columns:minmax(0,1fr) 238px;gap:28px;
+        align-items:center;background:linear-gradient(115deg,#19231a,#222d1c 62%,#14251f);
+        border:1px solid #557346;padding:36px 38px;margin-bottom:46px;
+        text-decoration:none;transition:border-color .2s,transform .2s;
+      }
+      .featured-series-banner:hover{border-color:var(--lime);transform:translateY(-2px)}
+      .featured-series-copy h3{font-size:clamp(33px,4.5vw,53px);letter-spacing:-1.8px;line-height:1.08;margin:14px 0}
+      .featured-series-copy h3 span{color:var(--lime)}
+      .featured-series-copy p{font-size:13px;line-height:1.7;color:#b9c5b6;max-width:590px;margin:0}
+      .featured-series-cta{display:inline-block;color:var(--lime);font-size:11px;letter-spacing:1px;font-weight:800;margin-top:20px}
+      .featured-series-numbers{display:flex;gap:19px;justify-content:flex-end}
+      .featured-series-numbers div{border-left:1px solid #53664a;padding-left:15px}
+      .featured-series-numbers strong{display:block;font-size:50px;line-height:1;color:var(--lime);letter-spacing:-2px}
+      .featured-series-numbers span{display:block;margin-top:12px;font-size:9px;letter-spacing:.8px;color:#bac4b1;white-space:nowrap}
+      .archive-heading{margin:0 0 20px}
+      .archive-heading h3{font-size:clamp(24px,3vw,31px);letter-spacing:-1px;margin:7px 0}
+      @media(max-width:760px){
+        .featured-series-banner{grid-template-columns:1fr;padding:25px 23px;gap:22px;margin-bottom:32px}
+        .featured-series-numbers{justify-content:flex-start}
+        .featured-series-numbers strong{font-size:40px}
+      }
+
 </style>
   </head>
   <body>
@@ -511,24 +542,36 @@ const stories = [
             <a class="section-link" href="#research">ALL RESEARCH ↗</a>
           </div>
 
-          <a href="/research/stockton-time-machine/" class="featured-story main-feature">
-            <div class="eyebrow">FEATURED INVESTIGATION / NBA TIME MACHINE / EPISODE 01</div>
-            <h3>We Looked for the Next <span>John Stockton.</span></h3>
-            <p>279 players. Five closest matches. A playmaking profile nobody in 2025–26 could quite reproduce. Explore the interactive statistical and physical comparisons.</p>
-            <strong>READ THE FEATURE ↗</strong>
+          <a href={featuredArticle.href} class="featured-story main-feature" aria-label={`Read latest Anticipate investigation: ${featuredArticle.title}`}>
+            <div class="eyebrow">LATEST INVESTIGATION / {featuredArticle.category}{featuredArticle.episode ? ` / EPISODE ${featuredArticle.episode}` : ""}</div>
+            <h3>{featuredArticle.headlineLead}<span>{featuredArticle.headlineAccent}</span></h3>
+            <p>{featuredArticle.description}</p>
+            <strong>READ THE LATEST FEATURE ↗</strong>
           </a>
-          <a href="/research/haliburton-achilles/" class="featured-story second-feature">
-            <div class="eyebrow">MORE RESEARCH / THE MODEL ROOM</div>
-            <h3>Tyrese Haliburton: A Career-Ending Injury? Or a <span>Career-Defining One?</span></h3>
-            <p>24 NBA Achilles recoveries. One model. What the numbers suggest about Haliburton's return.</p>
-            <strong>READ THE INVESTIGATION ↗</strong>
+
+          <a href="/series/nba-time-machine/" class="featured-series-banner" aria-label="Explore featured series NBA Time Machine">
+            <div class="featured-series-copy">
+              <div class="eyebrow">FEATURED SERIES / ANTICIPATE ORIGINALS</div>
+              <h3>NBA Time <span>Machine.</span></h3>
+              <p>Ten NBA legends, one modern player pool. Find out who measures up and where the comparisons fall apart.</p>
+              <span class="featured-series-cta">EXPLORE THE SERIES ↗</span>
+            </div>
+            <div class="featured-series-numbers" aria-hidden="true">
+              <div><strong>{String(publishedEpisodeCount).padStart(2,"0")}</strong><span>LIVE EPISODES</span></div>
+              <div><strong>10</strong><span>LEGENDS</span></div>
+            </div>
           </a>
+
+          <div class="archive-heading">
+            <div class="eyebrow">FROM THE RESEARCH DESK</div>
+            <h3>More investigations.</h3>
+          </div>
           <div class="stories">
-            {stories.map((story) => (
+            {archiveStories.map((story) => (
               <article class="story">
                 <div class="story-top">
                   <span>{story.category}</span>
-                  <span>NO. {story.number}</span>
+                  <span>{story.episode ? `EP. ${story.episode}` : story.number ? `NO. ${story.number}` : "ARCHIVE"}</span>
                 </div>
                 <h3>{story.title}</h3>
                 <p>{story.description}</p>
@@ -544,7 +587,7 @@ const stories = [
         <section class="section series-section" id="series" aria-labelledby="series-title">
           <div class="section-head">
             <div>
-              <div class="eyebrow">ORIGINAL SERIES / SEASON ONE</div>
+              <div class="eyebrow">FEATURED SERIES / SEASON ONE</div>
               <h2 id="series-title">NBA Time Machine.</h2>
             </div>
             <a class="section-link" href="/series/nba-time-machine/">VIEW THE SERIES ↗</a>
@@ -552,7 +595,7 @@ const stories = [
           <div class="series-intro">
             <div>
               <p class="series-kicker">TEN LEGENDS. ONE MODERN NBA.</p>
-              <p>What would the game's greatest players look like in 2025–26? We're taking it one legend at a time. Stockton and Isiah Thomas are live. Eight more legends are locked until their investigations are released.</p>
+              <p>What would the game's greatest players look like in 2025–26? We're taking it one legend at a time. {publishedEpisodeCount} investigations available now, with {upcomingEpisodeCount} more still to come.</p>
             </div>
             <a class="series-explore" href="/series/nba-time-machine/">EXPLORE ALL EPISODES ↗</a>
           </div>
