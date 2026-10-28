@@ -67,7 +67,7 @@ const url = "https://anticipate-peak.vercel.app/series/nba-time-machine/";
         <h1>NBA Time<br /><span>Machine.</span></h1>
         <p class="dek">You know what made the legends great. But what would their games look like now? We took ten all-time names, picked one defining season for each and searched the 2025–26 NBA for the closest measurable match.</p>
         <p class="dek">Same game. Different eras. Sometimes the closest match tells you more about what makes a legend impossible to copy.</p>
-        <div class="meta"><span><strong>10</strong> EPISODES</span><span><strong>279</strong> MODERN PLAYERS</span><span><strong>1</strong> CURRENTLY AVAILABLE</span></div>
+        <div class="meta"><span><strong>10</strong> EPISODES</span><span><strong>279</strong> MODERN PLAYERS</span><span><strong>2</strong> CURRENTLY AVAILABLE</span></div>
       </div>
       <div class="emblem" role="img" aria-label="NBA Time Machine emblem, ten episodes">
         <small>ANTICIPATE / HISTORICAL COMPARISONS</small><strong>10.</strong><small>ONE MODERN NBA / TEN HISTORICAL GREATS</small>
@@ -75,11 +75,11 @@ const url = "https://anticipate-peak.vercel.app/series/nba-time-machine/";
     </section>
     <div class="divider"></div>
     <section aria-labelledby="episodes-title" id="episodes">
-      <div class="section-head"><div><div class="eyebrow">THE EPISODE GUIDE</div><h2 id="episodes-title">The lineup.</h2></div><p>Read the first investigation now. The remaining nine are locked until their individual articles are published.</p></div>
+      <div class="section-head"><div><div class="eyebrow">THE EPISODE GUIDE</div><h2 id="episodes-title">The lineup.</h2></div><p>The first two investigations are available now. Eight episodes remain locked until their articles are published.</p></div>
       {nbaTimeMachineEpisodes.filter(ep=>ep.status==="published").map(ep=>(
         <a class="current" href={ep.href} aria-label={"Read NBA Time Machine episode "+ep.number+": "+ep.name}>
           <span class="big-no">{ep.number}</span>
-          <div><span class="state">AVAILABLE NOW</span><h3>{ep.name}</h3><p>Who does the NBA's greatest assist man resemble in 2025–26? Compare his closest matches with interactive radar charts.</p></div>
+          <div><span class="state">AVAILABLE NOW</span><h3>{ep.name}</h3><p>{ep.teaser ?? "Who comes closest to John Stockton? Explore five modern comparisons with interactive radar charts."}</p></div>
           <span class="go">READ EPISODE →</span>
         </a>
       ))}
