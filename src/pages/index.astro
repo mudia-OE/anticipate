@@ -4,6 +4,14 @@ import { nbaTimeMachineEpisodes } from "../data/nbaTimeMachineSeries.js";
 
 const stories = [
   {
+    category: "NBA TIME MACHINE",
+    number: "02",
+    title: "Isiah Thomas Looks Surprisingly Familiar.",
+    description: "Who comes closest to Zeke? Five modern matches, two interactive radars and one Trae Young wildcard.",
+    type: "PUBLISHED RESEARCH",
+    href: "/research/isiah-thomas-time-machine/"
+  },
+  {
     category: "DEFENSIVE ANALYSIS",
     number: "01",
     title: "Did Rudy Gobert Deserve All Four of His DPOYs?",
@@ -526,7 +534,7 @@ const stories = [
                 <p>{story.description}</p>
                 <div class="story-bottom">
                   <span>{story.type}</span>
-                  {story.href ? <a class="story-read" href={story.href}>READ EPISODE 01 ↗</a> : <span>COMING INTO FOCUS ↗</span>}
+                  {story.href ? <a class="story-read" href={story.href}>READ THE ARTICLE ↗</a> : <span>COMING INTO FOCUS ↗</span>}
                 </div>
               </article>
             ))}
@@ -544,7 +552,7 @@ const stories = [
           <div class="series-intro">
             <div>
               <p class="series-kicker">TEN LEGENDS. ONE MODERN NBA.</p>
-              <p>What would the game's greatest players look like in 2025–26? We're taking it one legend at a time. Stockton is live. The next nine investigations are locked until release.</p>
+              <p>What would the game's greatest players look like in 2025–26? We're taking it one legend at a time. Stockton and Isiah Thomas are live. Eight more legends are locked until their investigations are released.</p>
             </div>
             <a class="series-explore" href="/series/nba-time-machine/">EXPLORE ALL EPISODES ↗</a>
           </div>
