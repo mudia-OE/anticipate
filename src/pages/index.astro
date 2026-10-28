@@ -8,30 +8,10 @@ const [featuredArticle, ...olderArticles] = publishedResearch;
 const publishedEpisodeCount = nbaTimeMachineEpisodes.filter(episode => episode.status === "published").length;
 const upcomingEpisodeCount = nbaTimeMachineEpisodes.length - publishedEpisodeCount;
 
-const upcomingStories = [
-  {
-    category: "DEFENSIVE ANALYSIS",
-    number: "01",
-    title: "Did Rudy Gobert Deserve All Four of His DPOYs?",
-    description: "Taking a closer look at Gobert's four Defensive Player of the Year awards and the numbers behind them.",
-    type: "DATA DIVE"
-  },
-  {
-    category: "NBA HISTORY",
-    number: "02",
-    title: "Where Does Carmelo Anthony Rank Among the Greatest Scorers?",
-    description: "Examining Carmelo Anthony's place on the all-time scoring list, beyond just his career point total.",
-    type: "RESEARCH"
-  }
-];
-
-const archiveStories = [
-  ...olderArticles.map(article => ({
-    ...article,
-    type: "PUBLISHED RESEARCH"
-  })),
-  ...upcomingStories
-];
+const archiveStories = olderArticles.map(article => ({
+  ...article,
+  type: "PUBLISHED RESEARCH"
+}));
 ---
 
 <!doctype html>
