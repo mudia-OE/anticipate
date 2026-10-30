@@ -17,7 +17,7 @@ export const researchArticles = [
     title: "We Tried to Find the Next Charles Barkley. The Model Kept Picking Centers.",
     headlineLead: "We Tried to Find the Next Charles Barkley. ",
     headlineAccent: "The Model Kept Picking Centers.",
-    description: "Barkley defied his position. Our model chose four centers in its top five, and Zion Williamson ranked 11th. Explore the full 279-player interactive comparison.",
+    description: "Four of Barkley's five closest matches were centers. We investigated his elite rebounding, then tested Sabonis's 2024–25 season in two interactive radar comparisons.",
     href: "/research/charles-barkley-time-machine/",
   },
   {
