@@ -3,7 +3,7 @@
 export const nbaTimeMachineEpisodes = [
   { number: "01", name: "John Stockton", season: "1989–90", status: "published", href: "/research/stockton-time-machine/" },
   { number: "02", name: "Isiah Thomas", season: "1984–85", status: "published", href: "/research/isiah-thomas-time-machine/", teaser: "Does Isiah Thomas look more like a modern point guard than John Stockton did? Five matches, plus a Trae Young wildcard." },
-  { number: "03", name: "Charles Barkley", season: "1986–87", status: "published", href: "/research/charles-barkley-time-machine/", teaser: "An undersized power forward, four center matches, and an out-of-sample Sabonis rebounding challenge." },
+  { number: "03", name: "Charles Barkley", season: "1986–87", status: "published", href: "/research/charles-barkley-time-machine/", teaser: "An undersized forward who led the league in rebounding. Four center matches and a deeper look at how he dominated the glass." },
   { number: "04", name: "Larry Bird", season: "1984–85", status: "locked" },
   { number: "05", name: "Moses Malone", season: "1982–83", status: "locked" },
   { number: "06", name: "Hakeem Olajuwon", season: "1992–93", status: "locked" },
