@@ -17,7 +17,7 @@ export const researchArticles = [
     title: "We Tried to Find the Next Charles Barkley. The Model Kept Picking Centers.",
     headlineLead: "We Tried to Find the Next Charles Barkley. ",
     headlineAccent: "The Model Kept Picking Centers.",
-    description: "Four of Barkley's five closest matches were centers. We investigated his elite rebounding, then tested Sabonis's 2024–25 season in two interactive radar comparisons.",
+    description: "Four of Barkley's five closest modern matches were centers. Explore his extraordinary rebounding through interactive statistical and physical radars.",
     href: "/research/charles-barkley-time-machine/",
   },
   {
