@@ -92,30 +92,30 @@ const imageUrl = "https://images.imagerenderer.com/images/artworkimages/mediumla
 <section class="lab" id="comparison-lab" aria-labelledby="labtitle">
 <span class="eyebrow">ANTICIPATE INTERACTIVE LAB / 01</span>
 <h2 id="labtitle">Put Barkley against the modern NBA.</h2>
-<p class="labintro">Choose one of the model's top five, or try Zion as an out-of-top-five wildcard. The radar compares seven statistical dimensions; the bars show listed height and weight. Each comparison uses one season, not a career average.</p>
+<p class="labintro">Choose one of the five qualified 2025–26 matches or explore Sabonis’s 2024–25 season separately. Compare both <strong>statistical and physical-profile radar charts</strong>, listed measurements and rebound percentages. Sabonis does not enter the official 2025–26 top five.</p>
 <div class="playerpicker" id="playerPicker">
 <button class="playerpick" type="button" data-name="Jarrett Allen" aria-pressed="true"><span>MODEL #01</span><strong>Jarrett Allen</strong><em>Cleveland</em></button>
 <button class="playerpick" type="button" data-name="Jalen Duren" aria-pressed="false"><span>MODEL #02</span><strong>Jalen Duren</strong><em>Detroit</em></button>
 <button class="playerpick" type="button" data-name="Day'Ron Sharpe" aria-pressed="false"><span>MODEL #03</span><strong>Day'Ron Sharpe</strong><em>Brooklyn</em></button>
 <button class="playerpick" type="button" data-name="Marvin Bagley III" aria-pressed="false"><span>MODEL #04</span><strong>Marvin Bagley III</strong><em>Combined teams</em></button>
 <button class="playerpick" type="button" data-name="Sandro Mamukelashvili" aria-pressed="false"><span>MODEL #05</span><strong>Sandro Mamukelashvili</strong><em>Toronto</em></button>
-<button class="playerpick" type="button" data-name="Zion Williamson" aria-pressed="false"><span>WILDCARD · #11</span><strong>Zion Williamson</strong><em>New Orleans</em></button>
+<button class="playerpick" type="button" data-name="Domantas Sabonis" aria-pressed="false"><span>2024–25 TEST</span><strong>Domantas Sabonis</strong><em>Sacramento · different season</em></button>
 </div>
-<div class="profilelead"><div><span class="eyebrow">1986–87 VS 2025–26</span><h3 id="matchTitle">Barkley vs Jarrett Allen</h3></div><div class="ranknote" aria-live="polite"><strong id="matchDistance">0.744</strong> <span id="matchRank">distance · rank 1 of 279</span></div></div>
+<div class="profilelead"><div><span class="eyebrow" id="seasonPair">1986–87 VS 2025–26</span><h3 id="matchTitle">Barkley vs Jarrett Allen</h3></div><div class="ranknote" aria-live="polite"><strong id="matchDistance">0.744</strong> <span id="matchRank">distance · rank 1 of 279</span></div></div>
 <div class="profilegrid">
-<div class="chartcard"><h4>Production and role</h4><div class="sub">Seven axes, fixed scales across every player. Larger is not always better; shape shows resemblance.</div><svg id="statRadar" class="radar" viewBox="0 0 420 420" role="img" aria-label="Radar comparison between Charles Barkley and Jarrett Allen"></svg><div class="keys"><span><i style="background:var(--lime)"></i>Barkley 1986–87</span><span><i style="background:var(--teal)"></i>Selected 2025–26 player</span></div></div>
-<div class="chartcard"><h4>The physical question</h4><div class="sub">Listed measurements are part of the score, not a replacement for game film. Barkley's recorded height is disputed.</div><div id="bodyBars"></div><p class="labfoot">Chart widths share fixed reference scales: 230 cm for height and 330 lb for weight. They are not measured against the historical league's distribution.</p><div class="split-card" style="margin-top:22px"><h3>Who gets the job done?</h3><p>Physical dimensions influence how players can create offense. They do not prove that two players use those dimensions the same way.</p></div></div>
+<div class="chartcard"><h4>Production and role</h4><div class="sub">Seven axes, fixed scales across every player. Larger is not always better; shape shows resemblance.</div><svg id="statRadar" class="radar" viewBox="0 0 420 420" role="img" aria-label="Radar comparison between Charles Barkley and Jarrett Allen"></svg><div class="keys"><span><i style="background:var(--lime)"></i>Barkley 1986–87</span><span><i style="background:var(--teal)"></i>Selected season</span></div></div>
+<div class="chartcard"><h4>Physical profile radar</h4><div class="sub">Listed height, weight and whether the player shares Barkley's broad forward position. Position is a category (1 = same group, 0 = different), not a body measurement.</div><svg id="physicalRadar" class="physradar" viewBox="0 0 420 380" role="img" aria-label="Physical profile radar comparing Barkley with Jarrett Allen"></svg><div class="keys"><span><i style="background:var(--lime)"></i>Barkley 1986–87</span><span><i style="background:var(--teal)"></i>Selected season</span></div><div id="bodyBars"></div><p class="labfoot">The radar uses fixed display ranges: height 175–225 cm, weight 160–330 lb, categorical position match. The actual similarity distance uses standard deviations instead. Barkley's listed height is debated.</p></div>
 </div>
 <div class="profile-insight" aria-live="polite"><strong>THE READOUT</strong> <span id="matchReadout">The model’s first choice. The efficiency and rebounding production are close, but their roles are different.</span></div>
 <div class="tablewrap"><table class="stattable" aria-label="Statistical comparison"><thead><tr><th>MEASURE</th><th>BARKLEY '87</th><th id="modernTableHeading">ALLEN '26</th></tr></thead><tbody id="statsBody">
 <tr><td>Points / 100 possessions</td><td>28.2</td><td>27.2</td></tr><tr><td>Relative true shooting (pp)</td><td>+12.2</td><td>+8.8</td></tr><tr><td>Assist percentage</td><td>19.0%</td><td>9.7%</td></tr><tr><td>Total rebound percentage</td><td>20.8%</td><td>17.2%</td></tr><tr><td>Usage percentage</td><td>23.1%</td><td>19.9%</td></tr><tr><td>Steal percentage</td><td>2.1%</td><td>1.7%</td></tr><tr><td>Block percentage</td><td>2.2%</td><td>2.9%</td></tr>
 </tbody></table></div>
-<p class="labfoot">Relative TS = player true shooting % minus that season's league TS%, in percentage points. Scoring uses points per 100 possessions; percentages are different statistics. Radar axes are normalized for display and do not represent the model's distance formula.</p>
+<p class="labfoot">Relative TS = player true shooting % minus that season's league average, in percentage points. Sabonis: 65.5% − 57.6% = +7.9 pp. Scoring is points per 100 possessions; the radars show normalized displays, not the similarity formula.</p>
 
 <div class="ranklab" id="model-lab">
 <span class="eyebrow">ANTICIPATE INTERACTIVE LAB / 02</span>
 <h3>What happens when you change the weights?</h3>
-<p>We chose 70% statistics, 20% physical measurements, 10% position for the published ranking. But those are research decisions. Change the emphasis and watch the top five re-rank across <strong>all 279 players</strong>, not just the six shown above.</p>
+<p>We chose 70% statistics, 20% physical measurements, 10% position for the published ranking. But those are research decisions. Change the emphasis and watch the official top five re-rank across <strong>all 279 qualified 2025–26 players</strong>. Sabonis is evaluated separately using 2024–25 stats and the same 2025–26 reference distributions.</p>
 <div class="presets" role="group" aria-label="Model weighting">
 <button type="button" class="preset" data-mode="balanced" aria-pressed="true">Published · 70 / 20 / 10</button>
 <button type="button" class="preset" data-mode="stats" aria-pressed="false">Production first · 85 / 10 / 5</button>
@@ -128,7 +128,7 @@ const imageUrl = "https://images.imagerenderer.com/images/artworkimages/mediumla
 <div class="rankrow"><span class="position">04</span><span class="name">Marvin Bagley III<small>Forward</small></span><span class="distance">0.948</span></div>
 <div class="rankrow"><span class="position">05</span><span class="name">Sandro Mamukelashvili<small>Center</small></span><span class="distance">0.969</span></div>
 </div>
-<div class="zionbox" aria-live="polite"><span>ZION'S POSITION</span><b id="zionRank">#11</b><small id="zionScore">Distance 1.054 under the published weights</small></div>
+<div class="sabbox" aria-live="polite"><span>SABONIS 2024–25 · HYPOTHETICAL PLACEMENT</span><b id="sabRank">#4</b><small id="sabScore">Distance 0.930 against the 279-player field; out-of-sample, not an eligible 2025–26 result</small></div>
 <p class="labfoot">Exact formula: sqrt(weight_stat × average squared standardized statistical differences + weight_physical × average squared standardized height/weight differences + weight_position × group mismatch). Distances are not percentages of similarity, and smaller is closer. The alternative presets test sensitivity; they are not validated improvements.</p>
 </div>
 </section>
