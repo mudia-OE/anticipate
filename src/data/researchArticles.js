@@ -10,6 +10,17 @@
  */
 export const researchArticles = [
   {
+    id: "charles-barkley",
+    category: "NBA TIME MACHINE",
+    episode: "03",
+    publishedAt: "2026-10-30",
+    title: "We Tried to Find the Next Charles Barkley. The Model Kept Picking Centers.",
+    headlineLead: "We Tried to Find the Next Charles Barkley. ",
+    headlineAccent: "The Model Kept Picking Centers.",
+    description: "Barkley defied his position. Our model chose four centers in its top five, and Zion Williamson ranked 11th. Explore the full 279-player interactive comparison.",
+    href: "/research/charles-barkley-time-machine/",
+  },
+  {
     id: "isiah-thomas",
     category: "NBA TIME MACHINE",
     episode: "02",
