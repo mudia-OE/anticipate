@@ -16,7 +16,7 @@ const latestResearchDate = datedResearch
 
 const pageLastModified = new Map([
   ['/', latestResearchDate ?? '2026-10-28'],
-  ['/series/nba-time-machine/', '2026-10-28'],
+  ['/series/nba-time-machine/', latestResearchDate ?? '2026-10-28'],
   ...datedResearch.map((article) => [article.href, article.publishedAt]),
 ]);
 
