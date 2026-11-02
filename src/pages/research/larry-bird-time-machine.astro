@@ -21,6 +21,25 @@ const measures = [
  {key:"steal",title:"Steal percentage",code:"STL%",max:4.5,unit:"%"},
  {key:"block",title:"Block percentage",code:"BLK%",max:4,unit:"%"},
 ];
+const physicalMeasures = [
+ {key:"height",title:"Listed height",code:"HEIGHT",min:175,max:225,unit:" cm"},
+ {key:"weight",title:"Listed weight",code:"WEIGHT",min:150,max:320,unit:" lb"},
+ {key:"roleMatch",title:"Same broad position group",code:"FORWARD",min:0,max:1,unit:""},
+];
+const radialPoint = (i,count,dist,centerX=210,centerY=194) => {
+ const angle = -Math.PI/2 + 2*Math.PI*i/count;
+ return {x:centerX+Math.cos(angle)*dist,y:centerY+Math.sin(angle)*dist};
+};
+const radarPoints = (profile,axes, radius=129) => axes.map((axis,i)=>{
+ const val=axis.key==="roleMatch"?(profile.position==="Forward"||profile.name==="Larry Bird"?1:0):profile[axis.key];
+ const fraction=Math.max(0,Math.min(1,(val-(axis.min??0))/(axis.max-(axis.min??0))));
+ const p=radialPoint(i,axes.length,radius*fraction);
+ return p.x.toFixed(2)+","+p.y.toFixed(2);
+}).join(" ");
+const radarRing = (axes,fraction) => axes.map((axis,i)=>{
+ const p=radialPoint(i,axes.length,129*fraction);
+ return p.x.toFixed(2)+","+p.y.toFixed(2);
+}).join(" ");
 const rankingPresets = {
  balanced: [{name:"Michael Porter Jr.",distance:0.4853},{name:"Jalen Johnson",distance:0.4996},{name:"Franz Wagner",distance:0.5913},{name:"Deni Avdija",distance:0.5965},{name:"LeBron James",distance:0.6398}],
  production: [{name:"Michael Porter Jr.",distance:0.5300},{name:"Jalen Johnson",distance:0.5410},{name:"LeBron James",distance:0.6195},{name:"Julius Randle",distance:0.6304},{name:"Deni Avdija",distance:0.6432}],
@@ -71,6 +90,22 @@ const sources = [
 @media(max-width:900px){.hero{grid-template-columns:1fr}.hero-photo{min-height:340px}.hero-photo img{height:370px}.story-grid{grid-template-columns:1fr;gap:0}.aside{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;position:static;margin:15px 0 40px}.bar-grid{grid-template-columns:1fr}.rankings{grid-template-columns:repeat(3,1fr)}.source-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.shell{width:min(100% - 30px,1160px)}.topbar{height:70px}.toplinks{gap:11px;font-size:9px}.hero{padding:39px 0 31px;gap:25px}.hero h1{letter-spacing:-2.7px;font-size:clamp(41px,10vw,61px)}.hero-photo img{height:280px}.hero-photo{min-height:280px}.stats-strip{grid-template-columns:repeat(2,1fr);margin-bottom:40px}.stats-strip>div:nth-child(2){border-right:0}.stats-strip>div:last-child{grid-column:span 2;border-top:1px solid var(--line)}.article{font-size:15px}.article .lead{font-size:20px}.article h2{margin-top:46px}.aside{grid-template-columns:1fr}.scene{grid-template-columns:1fr}.data-lab{padding:17px;margin:48px -3px}.labtag{display:none}.picker{grid-template-columns:repeat(2,1fr)}.pick{min-height:76px}.rankings{grid-template-columns:repeat(2,1fr)}.source-grid{grid-template-columns:1fr}.footer{flex-direction:column;align-items:start}.closing{padding:23px}.panel-caption{display:block}.swatches{margin-top:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.pick,.barline i{transition:none}}
+
+.radar-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.radar-panel{margin:0;border:1px solid #394134;background:#191d18;padding:18px 14px 14px;min-width:0}
+.radar-panel h4{margin:0 6px 5px;font-size:19px;line-height:1.3;letter-spacing:-.3px;color:#f3f5ea}
+.radar-panel>p{margin:0 6px 4px;font-size:11px;line-height:1.4;color:var(--muted)}
+.radar-panel svg{width:100%;height:auto;display:block;overflow:visible}
+.radar-ring{fill:none;stroke:#44513e;stroke-width:1;vector-effect:non-scaling-stroke}
+.radar-spoke{stroke:#3b4638;stroke-width:1;vector-effect:non-scaling-stroke}
+.radar-fill-bird{fill:rgba(212,255,69,.19);stroke:var(--lime);stroke-width:2.5;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.radar-fill-modern{fill:rgba(130,210,195,.15);stroke:var(--teal);stroke-width:2.5;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.radar-axis{fill:#d6e0d1;font-size:12px;font-weight:800;letter-spacing:.4px}
+.radar-panel figcaption{font-size:11px;line-height:1.6;color:#acb8a8;padding:2px 7px 4px}
+.radar-values{margin:21px 0 16px;border-top:1px solid var(--line)}
+.radar-values .data-table{min-width:0}
+.radar-values .data-table th:not(:first-child),.radar-values .data-table td:not(:first-child){text-align:right}
+@media(max-width:620px){.radar-grid{grid-template-columns:1fr}.radar-panel{padding:15px 8px 10px}.radar-axis{font-size:11px}.radar-values .data-table{font-size:12px}.radar-values .data-table td,.radar-values .data-table th{padding:11px 7px}}
 </style>
 </head>
 <body>
@@ -88,7 +123,7 @@ const sources = [
 <div>
 <div class="episode"><b>04</b><span>NBA TIME MACHINE / AN ORIGINAL INVESTIGATION</span></div>
 <h1 id="article-title">We tried to find the next Larry Bird. <em>The model picked Michael Porter Jr.</em></h1>
-<p class="dek">A 1985 MVP season, 279 modern players, five surprisingly familiar forwards and one question statistics alone cannot settle: what actually made Larry Bird <em>Larry Bird</em>?</p>
+<p class="dek">From a 1984–85 MVP masterpiece to 279 modern NBA players: which forwards come closest to the scoring, passing and all-around presence of Larry Bird?</p>
 <div class="byline"><span>By <strong>{author}</strong></span><span>November 1, 2026</span><span>Research / 12 min read</span></div>
 </div>
 <figure class="hero-photo">
@@ -106,19 +141,11 @@ const sources = [
 </section>
 <div class="story-grid">
 <article class="article" aria-label="Article">
-<p class="lead">The computer did not choose the player most people would call the next Larry Bird. It chose Michael Porter Jr., a 6-foot-10 shooter who spent much of his career making defenders pay for giving him an inch of space.</p>
-<p>That result sounds absurd if your picture of Bird is a passing savant, a three-time MVP, an orchestrator who could read a possession before anyone else recognized what was happening. Porter is not that player. Yet the more we examined the model's answer, the harder it became to dismiss. The shooting threat, the height, the scoring workload and the forward-sized frame all leave recognizable traces.</p>
-<p>Then came the runner-up: Jalen Johnson. He looks less like Bird as a shooter but more familiar as a tall forward who rebounds, handles, sees the floor and turns one possession into the next. One candidate gives us a version of Bird's scoring geometry. Another gives us something of his all-court involvement.</p>
-<p><strong>Neither gives us the full picture.</strong> And that is where this investigation begins.</p>
-<h2><span class="section-index">01 / BEFORE THE ALGORITHM</span>Who was Larry Bird, really?</h2>
-<p>Larry Joe Bird came from southern Indiana, where basketball was less a pastime than a local language. From French Lick and Springs Valley High School, he went to Indiana State, carrying a small school's program to the 1979 NCAA championship game. On the other side of that final was Magic Johnson and Michigan State. Their rivalry did not begin in the NBA, but it would help define the NBA's next decade.</p>
-<p>Boston drafted Bird in 1978, and he arrived in 1979 at a moment when the Celtics badly needed a new centre of gravity. By the time his career ended, he had won three championships, three consecutive MVP awards from 1984 through 1986, two Finals MVPs and twelve All-Star selections. Alongside Magic's Lakers, Bird's Celtics helped turn the league's greatest rivalry into appointment viewing.</p>
-<p>But the résumé is the least interesting way to explain him. Bird was a 6-foot-9 forward with the vision of an elite point guard, the rebounding instincts of a bigger player and the release of a specialist shooter. He could score without monopolizing the ball, pass before the opening looked open and exploit a defender's smallest positional mistake. He didn't require spectacular speed or an enormous vertical leap to control a game. His edges were anticipation, timing, balance, touch, footwork and an almost stubborn insistence that a correct play be made.</p>
-<p>Much of the mythology is about confidence and trash talk. The basketball reality is more useful. Bird was constantly <strong>creating decisions</strong> for the defense: help on his catch and a cutter might be open; stay home and he might shoot; crowd his jumper and he could find the back door; send a small defender and he could work in the post. His passing was not a decorative addition to his scoring. It made his scoring harder to contain.</p>
-<blockquote>Bird wasn't only a shooter who could pass. He was a forward who could determine what the defense was allowed to do.</blockquote>
-<p>His 1984–85 season makes the point. Boston went 63–19 and reached the NBA Finals, where the Lakers won in six games. Bird won his second straight MVP by averaging 28.7 points, 10.5 rebounds and 6.6 assists, shooting 52.2% from the field, 42.7% from three and 88.2% at the line. He played nearly forty minutes a night and still finished as one of the league's most complete offensive players.</p>
-<p>On March 12, 1985, he scored 60 points against Atlanta on 22-for-36 shooting. The performance matters beyond its total: a forward who already carried Boston's passing and rebounding responsibilities could also have a transcendent individual scoring night. There was no tidy division between creator, finisher and organizer.</p>
-<p>One historical detail is easy to miss when looking at that 42.7% three-point figure: Bird attempted only about <strong>1.6 threes per game</strong> that season. The shot was a weapon, but this was not a modern high-volume three-point offense. Reading his shooting percentage as if it came from today's spacing and shot diet would be an error.</p>
+<h2><span class="section-index">01 / THE PLAYER</span>Before the model, there was Larry Bird</h2>
+<p class="lead">Larry Bird was one of basketball's great all-around forwards: a brilliant shooter, a demanding rebounder and a passer who seemed to see the next play before it existed.</p>
+<p>Raised in French Lick, Indiana, Bird took Indiana State to the 1979 NCAA championship game before arriving in Boston. With the Celtics he won <strong>three NBA titles, three consecutive MVP awards (1984–86)</strong> and became one half of the defining 1980s rivalry with Magic Johnson. Those achievements made him a legend; the way he played explains why.</p>
+<p>At 6-foot-9, Bird was a scorer who could run an offense without playing point guard. He punished a late closeout with his jumper, found cutters before defenders turned their heads and rebounded in traffic. He made the difficult look deliberate rather than spectacular. His shooting, vision and timing worked together, not as separate tricks.</p>
+<p>We chose his <strong>1984–85 MVP season</strong>: 28.7 points, 10.5 rebounds and 6.6 assists per game, plus 42.7% shooting from three. Boston finished 63–19 and reached the NBA Finals. It was the kind of season that makes you ask what a modern version of Bird might look like.</p>
 <h2><span class="section-index">02 / THE QUESTION</span>Can a modern player reproduce the shape of that season?</h2>
 <p>We took Bird's <strong>1984–85 regular season</strong>, not his career averages or a hand-picked mixture of his best seasons, and compared it against the Anticipate dataset of 279 NBA players from 2025–26. Each modern player cleared 1,000 regular-season minutes; traded players were counted once with combined season totals.</p>
 <p>We scored seven features: points per 100 possessions, true shooting relative to that player's league, assist percentage, total rebound percentage, usage percentage, steal percentage and block percentage. A second component measures listed height and weight. A third applies a penalty when a player's broad position differs from Bird's.</p>
@@ -145,32 +172,60 @@ const sources = [
 </tbody></table>
 </div>
 <div class="data-lab" id="comparison-lab">
-<div class="labhead"><div><span class="eyebrow">ANTICIPATE INTERACTIVE LAB / 01</span><h2>Bird versus the closest five</h2><p>Choose a 2025–26 player to compare seven pace-aware and role-aware features. Both bars use the same fixed scale for each metric. A longer bar does not automatically mean better basketball; it shows a larger value on that measurement.</p></div><span class="labtag">INTERACTIVE</span></div>
+<div class="labhead"><div><span class="eyebrow">ANTICIPATE INTERACTIVE LAB / 01</span><h2>Bird versus the closest five</h2><p>Choose any of the five modern players to update both radar charts. Lime represents Bird in 1984–85; teal represents the selected 2025–26 player. The charts use fixed scales for every candidate.</p></div><span class="labtag">INTERACTIVE</span></div>
 <div class="picker" role="group" aria-label="Choose a modern comparison">
 {players.map((player,i)=><button type="button" class="pick" data-player={i} aria-pressed={i===0?"true":"false"}><b>0{i+1} / {player.distance.toFixed(3)}</b><span>{player.name}</span><small>{player.team.replace("Brooklyn ","").replace("Atlanta ","").replace("Orlando ","").replace("Portland ","").replace("Los Angeles ","")}</small></button>)}
 </div>
 <div class="panel-caption"><div><span class="section-kicker">1984–85 / 2025–26</span><h3>Bird vs <span id="chosen-name">Michael Porter Jr.</span></h3><p id="chosen-detail">Brooklyn Nets · distance 0.4853</p></div><div class="swatches"><i style="background:var(--lime)"></i> Bird <i style="background:var(--teal)"></i> Modern</div></div>
-<div class="bar-grid" id="metric-bars" aria-live="polite">
-{measures.map(measure => {
-const p=players[0]; const minimum=measure.min??0;
-const bval=bird[measure.key];const mval=p[measure.key];
-const bwidth=Math.max(0,Math.min(100,((bval-minimum)/(measure.max-minimum))*100));
-const mwidth=Math.max(0,Math.min(100,((mval-minimum)/(measure.max-minimum))*100));
-return <div class="bar-card"><div class="bar-top"><span>{measure.code}</span><small title={measure.title}>{measure.title}</small></div><div class="barline bird"><i style={"width:"+bwidth+"%"}></i></div><div class="barline modern"><i style={"width:"+mwidth+"%"}></i></div><div class="values"><b>{bval.toFixed(1)}{measure.unit}</b><span>{mval.toFixed(1)}{measure.unit}</span></div></div>
-})}
+<div class="radar-grid">
+<figure class="radar-panel">
+<h4>Production and role</h4>
+<p>Seven statistical dimensions</p>
+<svg id="stats-radar" viewBox="0 0 420 390" role="img" aria-labelledby="stats-radar-title stats-radar-desc">
+<title id="stats-radar-title">Bird versus Michael Porter Jr.: statistical radar</title>
+<desc id="stats-radar-desc">Seven axes showing points per 100 possessions, era-relative shooting efficiency, assists, total rebounds, usage, steals and blocks. Compare exact values in the table below.</desc>
+{[0.25,0.5,0.75,1].map(level=><polygon class="radar-ring" points={radarRing(measures,level)}/>)}
+{measures.map((axis,i)=>{const p=radialPoint(i,measures.length,129);return <line class="radar-spoke" x1="210" y1="194" x2={p.x} y2={p.y}/>})}
+<polygon class="radar-fill-bird" points={radarPoints(bird,measures)} />
+<polygon id="stats-radar-modern" class="radar-fill-modern" points={radarPoints(players[0],measures)} />
+{measures.map((axis,i)=>{const p=radialPoint(i,measures.length,161);return <text class="radar-axis" x={p.x} y={p.y} text-anchor="middle" dominant-baseline="middle">{axis.code}</text>})}
+</svg>
+<figcaption>Each axis is normalized to its own fixed range; the shape is a visual comparison, not the model's actual distance calculation.</figcaption>
+</figure>
+<figure class="radar-panel">
+<h4>Physical profile</h4>
+<p>Height, listed weight and positional group</p>
+<svg id="physical-radar" viewBox="0 0 420 390" role="img" aria-labelledby="physical-radar-title physical-radar-desc">
+<title id="physical-radar-title">Bird versus Michael Porter Jr.: physical radar</title>
+<desc id="physical-radar-desc">Three axes showing listed height from 175 to 225 centimetres, listed weight from 150 to 320 pounds, and whether both players are classified as forwards. See exact measurements below.</desc>
+{[0.25,0.5,0.75,1].map(level=><polygon class="radar-ring" points={radarRing(physicalMeasures,level)}/>)}
+{physicalMeasures.map((axis,i)=>{const p=radialPoint(i,physicalMeasures.length,129);return <line class="radar-spoke" x1="210" y1="194" x2={p.x} y2={p.y}/>})}
+<polygon class="radar-fill-bird" points={radarPoints(bird,physicalMeasures)} />
+<polygon id="physical-radar-modern" class="radar-fill-modern" points={radarPoints(players[0],physicalMeasures)} />
+{physicalMeasures.map((axis,i)=>{const p=radialPoint(i,physicalMeasures.length,161);return <text class="radar-axis" x={p.x} y={p.y} text-anchor="middle" dominant-baseline="middle">{axis.code}</text>})}
+</svg>
+<figcaption>The positional axis is binary. All five of Bird's closest matches are forwards, so that axis remains the same when you switch players.</figcaption>
+</figure>
 </div>
-<p class="method-note">rTS measures percentage points above/below each season's league TS%. Player values are rounded to one decimal. Select a different player to update the comparison.</p>
+<div class="table-scroll radar-values">
+<table class="data-table" aria-label="Exact statistical and physical comparison">
+<thead><tr><th>Measure</th><th>Bird '85</th><th id="selected-values-header">Porter Jr. '26</th></tr></thead>
+<tbody>
+{[...measures,...physicalMeasures].map(axis=><tr><td>{axis.title}</td><td>{axis.key==="roleMatch"?"Forward":bird[axis.key].toFixed(1)+axis.unit}</td><td data-radar-value={axis.key}>{axis.key==="roleMatch"?"Forward":players[0][axis.key].toFixed(1)+axis.unit}</td></tr>)}
+</tbody></table>
+</div>
+<p class="method-note">rTS means true shooting percentage points above or below each player's league average. Listed body sizes may differ from game-day measurements. Axis scales stay fixed when you switch players; radar shapes do not express player greatness or percentage similarity. The published model uses standardized population distances, shown below.</p>
 </div>
 </section>
 <div class="story-grid">
 <article class="article">
-<h2><span class="section-index">04 / THE SURPRISING WINNER</span>Why Michael Porter Jr. makes sense</h2>
-<p>The first thing to understand is that our model is not saying Porter plays the same role Bird did. It is saying their measurable profiles, taken together, are closer than those of the other qualifying players. That distinction is essential.</p>
+<h2><span class="section-index">04 / THE TOP MATCH</span>Why Michael Porter Jr. makes sense</h2>
+<p>Porter comes out first because several features of his game line up with the Bird profile at once. Start with the big-picture overlap: the frame of a tall forward, a serious scoring load, shooting that forces the defense to react and an ability to punish a closeout before help arrives. It is a recognizable basketball connection, not just a row of similar numbers.</p>
 <p>Bird's listed height and weight were 206 centimetres and 220 pounds. The Anticipate modern data gives Porter 208 centimetres and 218 pounds. Their bodies are remarkably close by those limited measurements. Both are tall forwards capable of scoring over the top of a contest, and both make a defender think twice about surrendering an uncontested look.</p>
 <p>The scoring workload matters too. Bird produced 34.3 points per 100 possessions in 1984–85. Porter produced 36.9 per 100 in 2025–26, while carrying a substantially larger scoring role for Brooklyn than the finishing-focused version seen in his Denver years. In his 52 Brooklyn games, Porter averaged 24.2 points, 7.1 rebounds and 3.0 assists. It is not an identical stat line, but the high-volume scoring threat and forward-sized body help explain the model's result.</p>
 <p>There is also a basketball explanation beyond body measurements. Porter can punish defenders without needing to pound the dribble. His shooting touch, reach and ability to catch and rise can bend a defense by forcing a bigger, more urgent closeout. Bird also weaponized the threat of a jump shot to make the next action available. That is a meaningful resemblance in the <em>way a defense responds</em>, even if their preferred shots, movement patterns and passing decisions differ.</p>
 <p>Porter's accuracy from three in 2025–26 was 36.3%, on 9.3 attempts per game in Brooklyn; Bird hit 42.7%, on just 1.6 attempts per game in 1984–85. That does not prove either player was the superior era-adjusted shooter. It shows a major difference in the job their teams asked them to perform. We cannot pretend the same raw percentage describes the same offensive environment.</p>
-<h3>Where the comparison breaks</h3>
+<h3>What Bird brought beyond the shooting</h3>
 <p>Bird registered a 25.7% assist rate and 6.6 assists per game during his MVP campaign. Porter had an 18.2% assist rate and 3.0 assists per game in his 2025–26 Brooklyn season. Bird's involvement was broader, and his passing was not simply a volume stat. He used a threat to score to manufacture passing windows, often acting as the organizer of a possession. Porter can move the ball and make good reads, but his most recognizable value remains shotmaking and the attention it demands.</p>
 <p>On the glass, Bird's 14.7% rebound rate also exceeds Porter's 12.6%. The model notices those differences; it just decides the combined scoring and physical fit outweighs them. Porter's No. 1 position becomes reasonable once you understand the rules. It does not settle the basketball argument.</p>
 <blockquote>Porter is a plausible answer to “Who has Bird's scoring silhouette?” He is a much less complete answer to “Who plays Bird's game?”</blockquote>
@@ -256,45 +311,55 @@ return <div class="bar-card"><div class="bar-top"><span>{measure.code}</span><sm
 <footer class="footer"><div><a class="logo" href="/">ANTICIPATE<b>.</b></a><p>Original basketball research. Statistics in context.</p></div><nav class="footlinks"><a href="/">Home</a><a href="/series/nba-time-machine/">All episodes</a><a href="#article-title">Back to top</a></nav></footer>
 </div>
 <script>
-const birdLab = {pts100:34.3,rts:4.2,ast:25.7,trb:14.7,usage:28.5,steal:1.9,block:1.7};
+const birdLab = {name:"Larry Bird",position:"Forward",pts100:34.3,rts:4.2,ast:25.7,trb:14.7,usage:28.5,steal:1.9,block:1.7,height:206,weight:220};
 const current = [
-{name:"Michael Porter Jr.",team:"Brooklyn Nets",distance:.4853,pts100:36.9,rts:1.4,ast:18.2,trb:12.6,usage:30.5,steal:1.6,block:0.7},
-{name:"Jalen Johnson",team:"Atlanta Hawks",distance:.4996,pts100:30.2,rts:0,ast:33.5,trb:15.9,usage:27,steal:1.7,block:1.1},
-{name:"Franz Wagner",team:"Orlando Magic",distance:.5913,pts100:32.9,rts:0.7,ast:18.2,trb:9.7,usage:27,steal:1.5,block:1.0},
-{name:"Deni Avdija",team:"Portland Trail Blazers",distance:.5965,pts100:34.7,rts:1.9,ast:32.2,trb:11.2,usage:29.3,steal:1.1,block:1.7},
-{name:"LeBron James",team:"Los Angeles Lakers",distance:.6398,pts100:30.8,rts:1.3,ast:34.1,trb:10.7,usage:27.2,steal:1.8,block:1.6}
+{name:"Michael Porter Jr.",team:"Brooklyn Nets",position:"Forward",distance:.4853,pts100:36.9,rts:1.4,ast:18.2,trb:12.6,usage:30.5,steal:1.6,block:0.7,height:208,weight:218},
+{name:"Jalen Johnson",team:"Atlanta Hawks",position:"Forward",distance:.4996,pts100:30.2,rts:0,ast:33.5,trb:15.9,usage:27,steal:1.7,block:1.1,height:203,weight:219},
+{name:"Franz Wagner",team:"Orlando Magic",position:"Forward",distance:.5913,pts100:32.9,rts:0.7,ast:18.2,trb:9.7,usage:27,steal:1.5,block:1.0,height:208,weight:220},
+{name:"Deni Avdija",team:"Portland Trail Blazers",position:"Forward",distance:.5965,pts100:34.7,rts:1.9,ast:32.2,trb:11.2,usage:29.3,steal:1.1,block:1.7,height:203,weight:228},
+{name:"LeBron James",team:"Los Angeles Lakers",position:"Forward",distance:.6398,pts100:30.8,rts:1.3,ast:34.1,trb:10.7,usage:27.2,steal:1.8,block:1.6,height:206,weight:250}
 ];
 const metrics=[
-{key:"pts100",code:"PTS / 100",label:"Points per 100 possessions",max:48,min:0,unit:""},
-{key:"rts",code:"rTS",label:"True shooting above league",max:12,min:-5,unit:" pp"},
-{key:"ast",code:"AST%",label:"Assist percentage",max:52,min:0,unit:"%"},
-{key:"trb",code:"TRB%",label:"Total rebound percentage",max:23,min:0,unit:"%"},
-{key:"usage",code:"USG%",label:"Usage percentage",max:42,min:0,unit:"%"},
-{key:"steal",code:"STL%",label:"Steal percentage",max:4.5,min:0,unit:"%"},
-{key:"block",code:"BLK%",label:"Block percentage",max:4,min:0,unit:"%"}];
-const metricEl=document.getElementById("metric-bars");
+{key:"pts100",label:"Points per 100 possessions",max:48,min:0,unit:""},
+{key:"rts",label:"Era-relative true shooting",max:12,min:-5,unit:" pp"},
+{key:"ast",label:"Assist percentage",max:52,min:0,unit:"%"},
+{key:"trb",label:"Rebound percentage",max:23,min:0,unit:"%"},
+{key:"usage",label:"Usage percentage",max:42,min:0,unit:"%"},
+{key:"steal",label:"Steal percentage",max:4.5,min:0,unit:"%"},
+{key:"block",label:"Block percentage",max:4,min:0,unit:"%"}];
+const physicalMetrics=[
+{key:"height",label:"Listed height",min:175,max:225,unit:" cm"},
+{key:"weight",label:"Listed weight",min:150,max:320,unit:" lb"},
+{key:"roleMatch",label:"Same positional group",min:0,max:1,unit:""}];
 const playerButtons=Array.from(document.querySelectorAll("[data-player]"));
+function radarPolygon(profile,axes){
+return axes.map((metric,i)=>{
+const v=metric.key==="roleMatch"?(profile.position==="Forward"?1:0):profile[metric.key];
+const scale=Math.max(0,Math.min(1,(v-metric.min)/(metric.max-metric.min)));
+const angle=-Math.PI/2+(2*Math.PI*i)/axes.length;
+return (210+Math.cos(angle)*129*scale).toFixed(2)+","+(194+Math.sin(angle)*129*scale).toFixed(2);
+}).join(" ");
+}
 function selectPlayer(index){
-const person=current[index];if(!person||!metricEl)return;
+const person=current[index];if(!person)return;
 playerButtons.forEach((b,i)=>b.setAttribute("aria-pressed",String(i===index)));
 document.getElementById("chosen-name").textContent=person.name;
 document.getElementById("chosen-detail").textContent=person.team+" · distance "+person.distance.toFixed(4);
-metricEl.replaceChildren();
-for(const m of metrics){
-const card=document.createElement("div");card.className="bar-card";
-const h=document.createElement("div");h.className="bar-top";
-const cap=document.createElement("span");cap.textContent=m.code;
-const desc=document.createElement("small");desc.textContent=m.label;
-h.append(cap,desc);card.append(h);
-for(const [who,datum] of [["bird",birdLab],["modern",person]]){
-const bar=document.createElement("div");bar.className="barline "+who;bar.setAttribute("role","img");
-const value=datum[m.key];bar.setAttribute("aria-label",who==="bird"?"Larry Bird: "+value+m.unit:person.name+": "+value+m.unit);
-const fill=document.createElement("i");fill.style.width=Math.max(0,Math.min(100,(value-m.min)/(m.max-m.min)*100))+"%";bar.append(fill);card.append(bar);
+const statsShape=document.getElementById("stats-radar-modern");
+const bodyShape=document.getElementById("physical-radar-modern");
+statsShape?.setAttribute("points",radarPolygon(person,metrics));
+bodyShape?.setAttribute("points",radarPolygon(person,physicalMetrics));
+document.getElementById("stats-radar-title").textContent="Bird versus "+person.name+": statistical radar";
+document.getElementById("physical-radar-title").textContent="Bird versus "+person.name+": physical radar";
+document.getElementById("selected-values-header").textContent=person.name+" '26";
+document.querySelectorAll("[data-radar-value]").forEach(cell=>{
+const key=cell.getAttribute("data-radar-value");
+const axis=[...metrics,...physicalMetrics].find(m=>m.key===key);
+if(!axis)return;
+cell.textContent=key==="roleMatch"?"Forward":person[key].toFixed(1)+axis.unit;
+});
 }
-const values=document.createElement("div");values.className="values";const a=document.createElement("b");a.textContent=birdLab[m.key].toFixed(1)+m.unit;const b=document.createElement("span");b.textContent=person[m.key].toFixed(1)+m.unit;values.append(a,b);card.append(values);metricEl.append(card);
-}
-}
-playerButtons.forEach(b=>b.addEventListener("click",()=>selectPlayer(Number(b.dataset.player))));
+playerButtons.forEach(button=>button.addEventListener("click",()=>selectPlayer(Number(button.dataset.player))));
 const presetRanks={
 balanced:[["Michael Porter Jr.",.4853],["Jalen Johnson",.4996],["Franz Wagner",.5913],["Deni Avdija",.5965],["LeBron James",.6398]],
 production:[["Michael Porter Jr.",.5300],["Jalen Johnson",.5410],["LeBron James",.6195],["Julius Randle",.6304],["Deni Avdija",.6432]],
