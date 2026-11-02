@@ -10,6 +10,17 @@
  */
 export const researchArticles = [
   {
+    id: "larry-bird",
+    category: "NBA TIME MACHINE",
+    episode: "04",
+    publishedAt: "2026-11-01",
+    title: "We Tried to Find the Next Larry Bird. The Model Picked Michael Porter Jr.",
+    headlineLead: "We Tried to Find the Next Larry Bird. ",
+    headlineAccent: "The Model Picked Michael Porter Jr.",
+    description: "279 modern players. Michael Porter Jr. wins the numbers, Jalen Johnson makes the stylistic case. Explore Bird's history, interactive comparisons and model sensitivity.",
+    href: "/research/larry-bird-time-machine/",
+  },
+  {
     id: "charles-barkley",
     category: "NBA TIME MACHINE",
     episode: "03",
