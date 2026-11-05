@@ -1,0 +1,338 @@
+---
+const pageUrl = "https://anticipate-peak.vercel.app/research/moses-malone-time-machine/";
+const heroImage = "https://cdn.nba.com/manage/2022/02/GettyImages-458875848-768x522.jpg";
+const title = "We Tried to Find the Next Moses Malone";
+const description = "We compared Moses Malone's 1982–83 MVP season with 279 NBA players from 2025–26. Karl-Anthony Towns topped the model, Jalen Duren challenged the basketball comparison, and the ranking changed when we changed the weights.";
+const author = "Divine Osas-Egbe";
+const moses = { name:"Moses Malone", team:"Philadelphia 76ers", year:"1982–83", pts100:30.5, rts:4.7, ast:5.1, trb:21.6, usage:26.0, steal:1.4, block:3.0, height:208, weight:215 };
+const matches = [
+ { name:"Karl-Anthony Towns",team:"New York Knicks",abbr:"NYK",distance:0.6510,pts100:32.1,rts:3.8,ast:14.7,trb:21.4,usage:25.9,steal:1.4,block:1.8,height:213,weight:248,three:36.8,minutes:2322,description:"The most convincing production-level match. His point production, usage, relative efficiency and total rebound share all sit strikingly close to Malone's. The perimeter shooting and face-up play tell a different story." },
+ { name:"Jalen Duren",team:"Detroit Pistons",abbr:"DET",distance:0.6795,pts100:33.4,rts:10.7,ast:11.0,trb:20.9,usage:23.6,steal:1.4,block:3.0,height:208,weight:250,three:null,minutes:1976,description:"The closer stylistic argument: force near the basket, paint scoring, rim pressure and a 20.9% total rebound share. His era-relative efficiency is much higher; the model does not treat shot diet as a separate feature." },
+ { name:"Kel'el Ware",team:"Miami Heat",abbr:"MIA",distance:0.7054,pts100:23.2,rts:3.5,ast:4.6,trb:21.1,usage:18.0,steal:1.6,block:4.4,height:213,weight:230,three:39.5,minutes:1704,description:"Very close rebound share and a lower-assist big-man role. The missing piece is scoring responsibility: Ware's usage and points per 100 possessions fall well short of Malone's season." },
+ { name:"Jarrett Allen",team:"Cleveland Cavaliers",abbr:"CLE",distance:0.7214,pts100:27.2,rts:8.8,ast:9.7,trb:17.2,usage:19.9,steal:1.7,block:2.9,height:206,weight:243,three:10.0,minutes:1519,description:"Screening, finishing, protecting the rim and living inside. Allen fits the old-school center impression but gives up too much scoring burden and rebound share to reproduce this version of Moses." },
+ { name:"Jalen Smith",team:"Chicago Bulls",abbr:"CHI",distance:0.8029,pts100:23.1,rts:2.7,ast:8.5,trb:17.2,usage:19.0,steal:1.0,block:3.3,height:203,weight:244,three:37.3,minutes:1095,description:"A more distant fifth-place result with some overlapping frontcourt production. His modest minutes and lower usage are significant differences, even though he clears our 1,000-minute threshold." }
+];
+const rankingPresets = {
+ baseline:{ label:"Balanced",weights:"70 / 20 / 10",note:"Statistical production gets 70%; body measurements 20%; broad position group 10%. The published ranking.",players:[["Karl-Anthony Towns",.6510],["Jalen Duren",.6795],["Kel'el Ware",.7054],["Jarrett Allen",.7214],["Jalen Smith",.8029]] },
+ scoring:{ label:"Production first",weights:"85 / 10 / 5",note:"Higher emphasis on points, efficiency, rebounding, usage, assists and stocks. Towns is still the closest match.",players:[["Karl-Anthony Towns",.5906],["Jalen Duren",.6375],["Jarrett Allen",.7271],["Kel'el Ware",.7398],["Jalen Smith",.8051]] },
+ build:{ label:"Size and role",weights:"50 / 30 / 20",note:"More weight on listed height, weight and positional group. Kel'el Ware overtakes Towns. These are a different set of weights, not more trustworthy ones.",players:[["Kel'el Ware",.6466],["Karl-Anthony Towns",.6965],["Jarrett Allen",.6967],["Jalen Duren",.7068],["Ivica Zubac",.7653]] }
+};
+const axes = [
+ {key:"pts100",label:"PTS / 100",full:"Points per 100 possessions",min:0,max:48,unit:""},
+ {key:"rts",label:"rTS",full:"True shooting above league average",min:-5,max:14,unit:" pp"},
+ {key:"ast",label:"AST%",full:"Assist percentage",min:0,max:40,unit:"%"},
+ {key:"trb",label:"TRB%",full:"Total rebound percentage",min:0,max:27,unit:"%"},
+ {key:"usage",label:"USG%",full:"Usage percentage",min:0,max:40,unit:"%"},
+ {key:"steal",label:"STL%",full:"Steal percentage",min:0,max:4.5,unit:"%"},
+ {key:"block",label:"BLK%",full:"Block percentage",min:0,max:7,unit:"%"}
+];
+const polar = (i,n,d) => ({x:240+Math.cos(-Math.PI/2+2*Math.PI*i/n)*d,y:211+Math.sin(-Math.PI/2+2*Math.PI*i/n)*d});
+const radarPolygon = (profile,r=132) => axes.map((m,i)=>{const v=Math.max(0,Math.min(1,(profile[m.key]-m.min)/(m.max-m.min)));const p=polar(i,axes.length,r*v);return p.x.toFixed(1)+","+p.y.toFixed(1)}).join(" ");
+const radarRing = fraction => axes.map((m,i)=>{const p=polar(i,axes.length,132*fraction);return p.x.toFixed(1)+","+p.y.toFixed(1)}).join(" ");
+const sources = [
+ {name:"NBA.com — Moses Malone, Legends profile",url:"https://www.nba.com/news/history-nba-legend-moses-malone",note:"Career, professional debut, the trade to Philadelphia, three MVPs and the 1983 championship."},
+ {name:"Philadelphia 76ers — Moses Malone alumni profile",url:"https://www.nba.com/sixers/76ers-alumni/moses-malone",note:"1982–83 season, the 65–17 Sixers, playoff run and Finals MVP."},
+ {name:"NBA.com — 1982–83 season review",url:"https://www.nba.com/news/history-season-review-1982-83",note:"Contemporary team context, award results and the 1983 postseason."},
+ {name:"Basketball-Reference — Moses Malone",url:"https://www.basketball-reference.com/players/m/malonmo01.html",note:"Historical 1982–83 per-game totals, 5.7 offensive rebounds per game and listed measurements."},
+ {name:"Basketball-Reference — 1982–83 advanced stats",url:"https://www.basketball-reference.com/leagues/NBA_1983_advanced.html",note:"Historical TS%, rebound%, assist%, usage%, steals% and blocks%."},
+ {name:"StatMuse — NBA league TS% by season",url:"https://www.statmuse.com/nba/ask/nba-league-average-ts-season-by-season-since-1980",note:"1982–83 league true shooting of 53.1%, making Moses's 57.8% a +4.7 percentage-point rTS."},
+ {name:"Basketball-Reference — 2025–26 advanced stats",url:"https://www.basketball-reference.com/leagues/NBA_2026_advanced.html",note:"Season-wide modern player efficiency and possession-based statistics."},
+ {name:"Anticipate — NBA Time Machine reproducible model",url:"https://github.com/mudia-OE/anticipate-nba-time-machine",note:"279-player source CSV, supplied 1982–83 reference profile, R model, distance results and exact method."}
+];
+const labDataJson = JSON.stringify({moses,matches,axes,rankingPresets});
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#10110f" />
+<title>{title} | Anticipate</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={pageUrl} />
+<meta property="og:site_name" content="Anticipate" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={pageUrl} />
+<meta property="og:image" content={heroImage} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={heroImage} />
+<script type="application/ld+json" set:html={JSON.stringify({"@context":"https://schema.org","@type":"Article",headline:title,description,image:heroImage,author:{"@type":"Person",name:author},publisher:{"@type":"Organization",name:"Anticipate",url:"https://anticipate-peak.vercel.app/"},datePublished:"2026-11-04",dateModified:"2026-11-04",mainEntityOfPage:pageUrl,articleSection:"NBA Time Machine"})}></script>
+<style>
+:root{--bg:#10110f;--panel:#1c1e19;--panel2:#252821;--ink:#f3f5ed;--muted:#aeb7aa;--line:#393e37;--lime:#d4ff45;--teal:#82d2c3;color-scheme:dark;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);line-height:1.7}a{color:inherit;text-underline-offset:4px}a:hover{color:var(--lime)}button{font:inherit;cursor:pointer}a:focus-visible,button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}p{margin:0 0 22px}.shell{width:min(1150px,calc(100% - 44px));margin:auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;height:85px;border-bottom:1px solid var(--line)}.logo{text-decoration:none;font-size:26px;font-weight:900;letter-spacing:-1.3px;line-height:1}.logo b{color:var(--lime)}.toplinks{display:flex;gap:23px;color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:800}.toplinks a{text-decoration:none}
+.episode,.eyebrow,.section-index,.smallcaps{font-size:11px;text-transform:uppercase;letter-spacing:2px;font-weight:900}.episode{color:var(--muted);display:flex;align-items:center;gap:12px}.episode b{background:var(--lime);color:#11130e;padding:7px 11px;letter-spacing:0}.eyebrow,.section-index{color:var(--lime)}
+.hero{display:grid;grid-template-columns:1.06fr .94fr;gap:36px;align-items:center;padding:65px 0 46px}.hero h1{font-size:clamp(45px,5.8vw,81px);line-height:.97;letter-spacing:-4px;margin:22px 0 27px;font-weight:900;max-width:720px}.hero h1 em{font-style:normal;color:var(--lime)}.dek{font-size:18px;line-height:1.72;color:#c1c8bc;max-width:610px}.byline{display:flex;flex-wrap:wrap;gap:12px 20px;margin:28px 0 0;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted)}.byline strong{color:var(--ink)}
+.hero-photo{height:492px;margin:0;position:relative;border:1px solid #4d5b44;background:linear-gradient(145deg,#374330,#121713);overflow:hidden}.hero-photo img{height:100%;width:100%;object-fit:cover;object-position:center;display:block;filter:saturate(.89) contrast(1.06)}.hero-photo:after{content:"";position:absolute;inset:38% 0 0;background:linear-gradient(transparent,rgba(10,14,10,.94));pointer-events:none}.hero-photo figcaption{position:absolute;bottom:15px;left:18px;right:18px;z-index:1;font-size:10px;line-height:1.5;color:#e1e5db}.photo-index{position:absolute;top:17px;left:18px;color:var(--ink);background:rgba(15,19,13,.75);padding:8px 12px;font-size:10px;font-weight:800;letter-spacing:1.5px;z-index:2}
+.stats-strip{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:45px}.stats-strip>div{padding:22px 13px 25px;border-right:1px solid var(--line)}.stats-strip>div:first-child{padding-left:0}.stats-strip>div:last-child{border:0}.stats-strip strong{display:block;font-size:clamp(25px,2.7vw,37px);font-weight:900;letter-spacing:-1.8px;line-height:1.15;color:var(--lime)}.stats-strip small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-top:10px;font-weight:700}
+.story-grid{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:58px;align-items:start}.article{min-width:0}.article h2{font-size:clamp(27px,3vw,40px);line-height:1.16;letter-spacing:-1.3px;font-weight:900;margin:58px 0 22px;scroll-margin-top:30px}.article h2:first-child{margin-top:0}.article h2 .section-index{display:block;margin-bottom:13px}.article h3{font-size:21px;line-height:1.25;margin:30px 0 14px}.article p{font-size:16px;line-height:1.92;color:#d3d9cf}.article .lead{font-size:20px;line-height:1.72;color:var(--ink);font-weight:500}.article strong{color:#f4f6ed}.article a{color:var(--teal)}.article blockquote{margin:30px 0;padding:28px 27px;border-left:4px solid var(--lime);background:var(--panel);font-size:25px;line-height:1.3;font-weight:900;letter-spacing:-.55px}.article blockquote small{display:block;font-size:12px;margin-top:14px;letter-spacing:1px;color:var(--muted);font-weight:600;text-transform:uppercase}
+.toc{position:sticky;top:24px;border-top:3px solid var(--lime);padding:20px 0 25px}.toc h3{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--lime);margin:0 0 18px}.toc a{display:block;text-decoration:none;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px;line-height:1.5;color:#b9c0b3}.toc a:hover{color:var(--lime)}.toc .recirc{padding:18px 15px;margin-top:30px;background:var(--panel);border:1px solid var(--line);font-size:12px;line-height:1.6;color:var(--muted)}.toc .recirc b{display:block;color:var(--ink);font-size:15px;margin:5px 0}
+.research-unit{background:var(--panel);border:1px solid var(--line);padding:26px;margin:32px 0}.research-unit .smallcaps{display:block;color:var(--teal);margin-bottom:13px}.research-unit p:last-child{margin-bottom:0}.formula{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px!important;line-height:1.7!important;overflow-wrap:anywhere;color:var(--lime)!important}
+.fullbleed{margin:62px 0 55px;padding:32px;border:1px solid #424a3b;background:linear-gradient(142deg,#1c2219,#191c19)}.fullbleed h2{margin:0 0 10px;letter-spacing:-1.4px;font-size:clamp(28px,3vw,40px);line-height:1.15}.fullbleed .intro{color:var(--muted);max-width:740px;font-size:15px}.ranking-list{display:grid;gap:10px;margin-top:25px}.rank-row{display:grid;grid-template-columns:36px minmax(0,1fr) 72px;align-items:center;gap:16px;padding:16px 20px;border:1px solid var(--line);background:rgba(12,15,11,.45)}.rank-row:first-child{border-color:#8a9f56;background:rgba(212,255,69,.07)}.rankno{font-size:24px;font-weight:900;letter-spacing:-1px;color:var(--lime)}.rank-row h3{margin:0 0 4px;font-size:19px;line-height:1.3}.rank-row p{margin:0;color:var(--muted);font-size:11px;line-height:1.4;letter-spacing:1px}.distance{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:900;font-size:20px}.smallnote{font-size:12px;color:var(--muted);line-height:1.7}
+.radar-lab{background:var(--panel);border:1px solid #536044;padding:29px;margin:32px 0}.radar-lab h3{font-size:25px;margin:0 0 9px;line-height:1.2}.radar-lab>p{color:var(--muted);font-size:13px}.compare-buttons{display:flex;flex-wrap:wrap;gap:7px;margin:22px 0 12px}.compare-buttons button,.preset-buttons button{border:1px solid #51594b;background:#232820;color:#d5dacf;padding:10px 13px;font-size:12px;font-weight:800}.compare-buttons button[aria-pressed="true"],.preset-buttons button[aria-pressed="true"]{border-color:var(--lime);background:var(--lime);color:#151810}.radar-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.83fr);gap:14px;align-items:center}.radar-svg{width:100%;height:auto;display:block;overflow:visible}.radar-svg .ring{fill:none;stroke:#525e4f;stroke-width:.75}.radar-svg .spoke{stroke:#475043;stroke-width:1}.radar-svg .label{fill:#cdd8c7;font-size:11px;font-weight:800;letter-spacing:.45px;dominant-baseline:middle;text-anchor:middle}.radar-svg .moses-shape{fill:rgba(212,255,69,.16);stroke:var(--lime);stroke-width:2.8}.radar-svg .peer-shape{fill:rgba(130,210,195,.20);stroke:var(--teal);stroke-width:2.8}.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin:8px 0 0}.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:10px;height:10px;display:inline-block;background:var(--lime)}.legend i.teal{background:var(--teal)}.radar-side{min-width:0}.radar-side h4{font-size:22px;letter-spacing:-.5px;margin:10px 0;line-height:1.2}.radar-side p{color:#c4d0c5;font-size:13px;line-height:1.75;margin-bottom:16px}.radar-side .note{font-size:11px;color:var(--muted)}.value-list{margin:14px 0}.value-list div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:8px 0;font-size:12px}.value-list dt{color:#b4beae}.value-list dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}.value-list strong{color:var(--lime)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);margin:28px 0 14px}.compare-table{width:100%;border-collapse:collapse;min-width:580px;text-align:left;font-variant-numeric:tabular-nums}.compare-table th,.compare-table td{padding:14px 12px;border-bottom:1px solid var(--line);font-size:12px;white-space:nowrap}.compare-table thead{background:#30362b}.compare-table th{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--lime)}.compare-table tr:last-child td{border:0}.compare-table td:first-child{font-weight:800}
+.weight-lab{padding:28px;background:var(--panel);border:1px solid var(--line);margin:33px 0}.weight-lab h3{margin:0 0 8px;font-size:25px}.weight-lab p{font-size:13px;color:var(--muted)}.preset-buttons{display:flex;gap:8px;flex-wrap:wrap;margin:17px 0}.preset-meta{display:flex;justify-content:space-between;gap:10px;align-items:baseline;font-size:12px;color:var(--muted);margin:16px 0}.preset-meta strong{color:var(--lime)}.weight-list{padding:0;margin:0;list-style:none;display:grid;gap:8px}.weight-list li{display:flex;align-items:center;gap:10px;padding:10px 13px;background:#151812;border:1px solid var(--line);font-size:13px}.weight-list li span:first-child{min-width:26px;color:var(--lime);font-weight:900}.weight-list li .right{margin-left:auto;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}.weight-list li:first-child{border-color:#a7be64}
+.source-list{padding:0;margin:25px 0;list-style:none;counter-reset:source}.source-list li{display:grid;grid-template-columns:27px 1fr;gap:8px;border-bottom:1px solid var(--line);padding:13px 0;counter-increment:source}.source-list li:before{content:counter(source,decimal-leading-zero);font-size:11px;color:var(--lime);font-weight:900;letter-spacing:.5px}.source-list a{font-weight:800}.source-list small{display:block;color:var(--muted);font-size:12px;line-height:1.7;margin-top:5px}
+.endcap{background:linear-gradient(130deg,#26311e,#151a15);border:1px solid #54613e;margin:62px 0 15px;padding:36px}.endcap .eyebrow{margin-bottom:12px}.endcap h2{font-size:clamp(27px,3vw,40px);letter-spacing:-1px;line-height:1.15;margin:0 0 14px}.endcap p{color:#c9d4c0;max-width:760px}.action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:23px}.cta{display:inline-flex;padding:12px 17px;align-items:center;justify-content:center;background:var(--lime);color:#11140f!important;text-decoration:none;font-weight:900;font-size:12px;letter-spacing:.7px;border:1px solid var(--lime)}.cta.secondary{background:transparent;color:var(--ink)!important;border-color:#818c74}.footer{border-top:1px solid var(--line);margin:60px 0 0;padding:35px 0 65px;display:flex;justify-content:space-between;gap:22px}.footer p{font-size:12px;color:var(--muted);margin-top:10px}.footlinks{display:flex;flex-wrap:wrap;gap:23px;font-size:12px;align-items:flex-start;color:var(--muted)}.footlinks a{text-decoration:none}
+@media(max-width:980px){.story-grid{grid-template-columns:minmax(0,1fr);gap:12px}.toc{position:static;order:-1;display:flex;flex-wrap:wrap;gap:5px 14px;border-top:1px solid var(--line);padding-bottom:12px}.toc h3{width:100%}.toc a{border:0;padding:6px 0}.toc .recirc{display:none}}
+@media(max-width:700px){.shell{width:min(100% - 32px,580px)}.topbar{height:70px}.logo{font-size:23px}.toplinks{gap:13px;font-size:10px}.toplinks a:last-child{display:none}.hero{grid-template-columns:1fr;padding:44px 0 30px;gap:26px}.hero h1{font-size:clamp(45px,12vw,65px);letter-spacing:-2.8px;margin:18px 0}.dek{font-size:16px}.hero-photo{height:345px}.hero-photo img{height:100%}.stats-strip{grid-template-columns:repeat(3,1fr)}.stats-strip>div{padding:16px 9px!important;border-bottom:1px solid var(--line)}.stats-strip strong{font-size:25px}.stats-strip small{font-size:9px}.story-grid{display:flex;flex-direction:column}.article h2{margin-top:43px}.fullbleed{padding:20px;margin:42px 0}.rank-row{padding:13px;gap:9px;grid-template-columns:25px minmax(0,1fr) 58px}.rank-row h3{font-size:15px}.rank-row p{font-size:9px}.rankno,.distance{font-size:18px}.radar-lab,.weight-lab{padding:16px;margin:27px 0}.radar-inner{grid-template-columns:1fr}.radar-side{padding:0 5px}.endcap{padding:22px}.footer{flex-direction:column}.toc a{font-size:10px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="topbar">
+<a class="logo" href="/" aria-label="Anticipate homepage">ANTICIPATE<b>.</b></a>
+<nav class="toplinks" aria-label="Main navigation">
+<a href="/#research">Research</a><a href="/series/nba-time-machine/">Time Machine</a><a href="#methodology">Method</a>
+</nav>
+</header>
+<main>
+<section class="hero" aria-labelledby="article-title">
+<div>
+<div class="episode"><b>05</b> NBA TIME MACHINE / AN ORIGINAL INVESTIGATION</div>
+<h1 id="article-title">We tried to find the <em>next Moses Malone.</em></h1>
+<p class="dek">The model picked Karl-Anthony Towns. But if the point of Moses Malone was to own every missed shot, is the closest statistical match really the closest basketball match?</p>
+<div class="byline"><span>By <strong>{author}</strong></span><span>November 4, 2026</span><span>Research / 13 min read</span></div>
+</div>
+<figure class="hero-photo">
+<span class="photo-index">PHILADELPHIA / NO. 2 / 1983</span>
+<img src={heroImage} alt="Moses Malone in his red Philadelphia 76ers jersey celebrating the 1983 NBA championship with Julius Erving" loading="eager" fetchpriority="high" />
+<figcaption>Moses Malone and Julius Erving after Philadelphia's 1983 championship. Archival photograph from <a href="https://www.nba.com/news/archive-75-moses-malone" target="_blank" rel="noopener noreferrer">NBA.com</a>. Image rights remain with the original photographer and rights holder.</figcaption>
+</figure>
+</section>
+
+<section class="stats-strip" aria-label="Moses Malone's 1982–83 NBA regular season">
+<div><strong>24.5</strong><small>Points / game</small></div>
+<div><strong>15.3</strong><small>Rebounds / game</small></div>
+<div><strong>5.7</strong><small>Offensive boards / game</small></div>
+<div><strong>65–17</strong><small>Sixers record</small></div>
+<div><strong>12–1</strong><small>Playoff record</small></div>
+</section>
+
+<div class="story-grid">
+<article class="article" aria-label="Moses Malone statistical investigation">
+<h2 id="moses"><span class="section-index">01 / THE MAN BEHIND THE NUMBERS</span>He didn't wait for the ball to come to him</h2>
+<p class="lead">Moses Malone built a Hall of Fame career by treating a missed shot as a beginning, not the end of a possession.</p>
+<p>Long before the NBA became a league of positionless creators and seven-foot shooters, Malone was one of the sport's great specialists in a deceptively difficult skill: winning the ball back after somebody missed it. The first shot might belong to a guard. The rebound was his. And once he had it, the possession often became a fight at the rim.</p>
+<p>Born in Petersburg, Virginia, he entered the pros directly from high school in 1974, signing with the ABA's Utah Stars when most future NBA players still took the college route. Over the next two decades, through the ABA and NBA, he became a relentless worker on the glass, an interior scorer and a player whose physical persistence changed games. By the end of his career, he had earned three NBA MVP awards. <a href="https://www.nba.com/news/history-nba-legend-moses-malone" target="_blank" rel="noopener noreferrer">The NBA's historical profile</a> traces that unusual path.</p>
+<p>He wasn't just tall or strong. Malone had an unusual understanding of rebounding angles, timing and where an attempt was likely to land. He often chased his own misses, absorbed contact and created a second or third opportunity while a defender was still trying to complete the first stop. The effect rarely fits into the tidy idea of a 'go-to move'. His go-to move was refusing to let an offensive possession die.</p>
+<p>In 1982, Philadelphia traded for him after falling short against the Lakers in the previous Finals. The 76ers already had Julius Erving, Andrew Toney, Maurice Cheeks and Bobby Jones. They didn't need a new offensive identity as much as they needed someone to solve the problem under the basket. Malone gave them exactly that.</p>
+
+<h2 id="season"><span class="section-index">02 / THE HISTORIC SEASON</span>The year of “Fo', Fo', Fo'”</h2>
+<p>In <strong>1982–83</strong>, Malone averaged <strong>24.5 points, 15.3 rebounds and 2.0 blocks per game</strong> over 78 regular-season appearances. His total rebounds led the NBA, and he collected <strong>5.7 offensive rebounds per game</strong> alone. For context, that is almost six extra possessions or immediate scoring chances created from misses every night, though an offensive rebound does not always start a separate recorded possession.</p>
+<p>Those figures weren't empty accumulation. Philadelphia went <strong>65–17</strong>. Malone won his third league MVP, made All-NBA First Team and All-Defensive First Team, and became the central inside presence of the eventual champions. His true shooting was <strong>57.8%</strong>, compared with the NBA's approximately <strong>53.1%</strong> that season: a positive <strong>4.7 percentage-point</strong> efficiency margin.</p>
+<p>Before the postseason, Malone famously predicted three straight sweeps: “Fo', Fo', Fo'.” The Sixers nearly delivered. They swept the Knicks, beat Milwaukee in five games, then swept Kareem Abdul-Jabbar and the Lakers in the Finals. The result was a <strong>12–1 postseason</strong> and a Finals MVP for Malone, who averaged roughly 26 points and 18 rebounds against Los Angeles. The prediction didn't need to be exact to become legendary.</p>
+<blockquote>His defining talent wasn't only scoring from the paint. It was making the defense guard the same possession again.<small>Anticipate / The offensive glass</small></blockquote>
+<p>That context matters because today's NBA can produce a center with similar points, usage and rebounding percentages while asking him to take three-pointers, facilitate from the perimeter or screen in a different geometry of the court. The numbers might rhyme while the jobs do not.</p>
+
+<h2 id="methodology"><span class="section-index">03 / THE INVESTIGATION</span>How we searched for another Moses</h2>
+<p>Our question was deliberately narrower than “who is as good as Moses Malone?” We asked which qualified modern player's measurable <strong>2025–26 regular-season profile</strong> most closely resembles his 1982–83 season. This investigation uses the same <strong>279-player dataset</strong> and model as the previous four NBA Time Machine stories. Every player in the modern pool logged at least 1,000 minutes. Players who were traded have one combined-season row.</p>
+<p>The model compares <strong>seven statistical measures</strong>: points per 100 possessions, true shooting relative to league average, assist percentage, total rebound percentage, usage, steal percentage and block percentage. It also considers listed height and weight and a broad guard/forward/center designation.</p>
+<p>Every numeric difference is standardized using the spread of the 279 modern players. Then three groups combine into a distance score: <strong>70% statistics, 20% physical profile and 10% position</strong>. Smaller distance means a closer match, not a higher similarity percentage. Three-point accuracy and free-throw shooting are present in the underlying dataset but don't affect this model's score.</p>
+<div class="research-unit">
+<span class="smallcaps">The method, without the mystery</span>
+<p class="formula">distance = √(0.70 × statistical distance² + 0.20 × physical distance² + 0.10 × position penalty)</p>
+<p>Inside the statistical group, we average the squared standardized differences across the seven metrics; inside the physical group, across height and weight. A position match has penalty 0; a mismatch has penalty 1. The published results and data live in the <a href="https://github.com/mudia-OE/anticipate-nba-time-machine" target="_blank" rel="noopener noreferrer">open Anticipate model repository</a>.</p>
+</div>
+<p>One important boundary: the model tracks <em>total</em> rebound percentage, not offensive rebound percentage specifically. It has no direct measure of box-out technique, putbacks, contested boards, post-up frequency or extra possessions created. That gap is especially important for Moses Malone, whose offensive rebounding was his trademark.</p>
+<p>Listed measurements are only approximate cross-era proxies. Our historical reference file uses 208 cm and 215 lb for Malone; contemporary official profiles don't always agree about his listed height. The difference between 1980s body listings and modern rosters should not be mistaken for precise biometric evidence.</p>
+
+<h2 id="result"><span class="section-index">04 / THE RESULT</span>The closest match was a stretch five</h2>
+<p>The winner was <strong>Karl-Anthony Towns</strong>. Not because our model thinks he is the same kind of player as Moses. Towns ranks first because several key ingredients of the 1982–83 season line up remarkably well: overall scoring volume, usage, league-adjusted efficiency and total rebound share. The output is less absurd when you see what the model is actually measuring.</p>
+</article>
+<aside class="toc" aria-label="On this page">
+<h3>Inside the investigation</h3>
+<a href="#moses">01 — Who Moses was</a><a href="#season">02 — The 1983 title run</a><a href="#methodology">03 — How the model works</a><a href="#result">04 — The five matches</a><a href="#comparison">05 — The radar lab</a><a href="#towns">06 — Towns vs. Duren</a><a href="#other">07 — The other three</a><a href="#sensitivity">08 — Change the weights</a><a href="#verdict">09 — What the model misses</a><a href="#sources">Sources</a>
+<div class="recirc">NEXT IN THE SERIES<b>Hakeem Olajuwon</b>Episode 06 / 1992–93 / Coming soon</div>
+</aside>
+</div>
+
+<section class="fullbleed" aria-label="The five nearest modern players">
+<div class="eyebrow">THE RESULTS / 279 ELIGIBLE MODERN PLAYERS</div>
+<h2>Five players. Five different ways to resemble Moses.</h2>
+<p class="intro">Ranking by the default 70% production / 20% size / 10% position model. Distances are not percentages; <strong>lower is closer</strong>.</p>
+<div class="ranking-list">
+{matches.map((m,i)=>(
+<div class="rank-row">
+<div class="rankno">{String(i+1).padStart(2,"0")}</div>
+<div><h3>{m.name}</h3><p>{m.team.toUpperCase()} / CENTER / 2025–26</p></div>
+<div class="distance">{m.distance.toFixed(4)}</div>
+</div>
+))}
+</div>
+<p class="smallnote" style="margin-top:16px">Model reference: Anticipate NBA Time Machine preliminary results, independently recalculated against the underlying 279-player CSV. All five clear the 1,000-minute threshold.</p>
+</section>
+
+<div class="story-grid">
+<article class="article">
+<h2 id="comparison"><span class="section-index">05 / INTERACTIVE COMPARISON</span>The rebound shape tells a different story</h2>
+<p>Use the radar below to compare Moses with each of the five matches. This is not a ranking diagram. All seven axes have <strong>fixed, labeled scales</strong>, and the values are shown alongside the plot. A shape that overlaps well on one axis can be far apart on another. That is the point of the exercise.</p>
+<div class="radar-lab">
+<div class="eyebrow">EXPLORE / MOSES VS. 2025–26</div>
+<h3>Seven dimensions of one season</h3>
+<p>Choose a modern center. Lime is Moses Malone, teal is the selected player. These are raw metrics displayed on common fixed axis limits, not normalized match percentages.</p>
+<div class="compare-buttons" aria-label="Choose a modern player">
+{matches.map((m,i)=><button type="button" data-player-index={i} aria-pressed={i===0?"true":"false"}>{m.name}</button>)}
+</div>
+<div class="radar-inner">
+<div>
+<svg class="radar-svg" viewBox="0 0 480 440" role="img" aria-label="Statistical radar chart comparing Moses Malone with Karl-Anthony Towns; select another player to update">
+{[0.25,0.50,0.75,1].map(fr=><polygon class="ring" points={radarRing(fr)} />)}
+{axes.map((axis,i)=>{const q=polar(i,axes.length,132);return <line class="spoke" x1="240" y1="211" x2={q.x} y2={q.y} />;})}
+<polygon class="moses-shape" points={radarPolygon(moses)} />
+<polygon class="peer-shape" id="peer-polygon" points={radarPolygon(matches[0])} />
+{axes.map((axis,i)=>{const p=polar(i,axes.length,174);return <text class="label" x={p.x} y={p.y}>{axis.label}</text>;})}
+</svg>
+<div class="legend"><span><i></i>Moses Malone, 1982–83</span><span><i class="teal"></i><span id="legend-player">Karl-Anthony Towns</span>, 2025–26</span></div>
+</div>
+<div class="radar-side" aria-live="polite">
+<div class="eyebrow">SELECTED COMPARISON</div>
+<h4 id="lab-name">Karl-Anthony Towns</h4>
+<p id="lab-description">The most convincing production-level match. His point production, usage, relative efficiency and total rebound share all sit strikingly close to Malone's. The perimeter shooting and face-up play tell a different story.</p>
+<dl class="value-list" id="lab-values">
+{axes.map(axis=><div><dt>{axis.label}</dt><dd><strong>{moses[axis.key].toFixed(1)}</strong> / {matches[0][axis.key].toFixed(1)}</dd></div>)}
+</dl>
+<p class="note">Numbers show Moses / selected player. Relative TS (rTS) is measured in percentage points above the league average. Match-distance formula uses additional size and position features not drawn on this radar.</p>
+</div>
+</div>
+</div>
+
+<h2 id="towns"><span class="section-index">06 / THE BASKETBALL ARGUMENT</span>Karl-Anthony Towns wins the math. Jalen Duren has a basketball case.</h2>
+<h3>Why Towns is actually first</h3>
+<p>It starts with a pair of numbers that are almost identical. Malone used <strong>26.0%</strong> of his team's plays while he was on the floor; Towns used <strong>25.9%</strong>. Malone grabbed <strong>21.6%</strong> of available rebounds; Towns grabbed <strong>21.4%</strong>. Even the scoring and efficiency are close: <strong>30.5 vs. 32.1 points per 100 possessions</strong> and <strong>+4.7 vs. +3.8 percentage points</strong> of true shooting above their respective league averages.</p>
+<p>That is an impressive overlap in four of the model's seven statistical dimensions. It captures a high-usage, high-production big man who is not merely present on the glass but one of the team's main finishers. Towns is a legitimate modern player to examine for that <em>overall production footprint</em>.</p>
+<p>But if you close your eyes and picture a possession, the resemblance gets weaker. Towns is comfortable spacing the floor, attacking from the perimeter and shooting threes. He made <strong>36.8% of his threes</strong> in the 2025–26 data used here, attempting about <strong>6.6 per 100 possessions</strong>. Malone's 1982–83 offense did not work that way. Almost all of his offensive value was created inside, at the foul line and by recovering missed shots. Towns also had a substantially larger assist share: 14.7% to Moses's 5.1%.</p>
+<p>So the model finds similarity in <strong>how much</strong> they contributed to scoring, rebounding and possession usage. It does not establish similarity in <strong>how</strong> they produced those contributions. That is the difference between an accurate statistical answer and a careless comparison.</p>
+<h3>Why Duren might look more like Moses on film</h3>
+<p>Jalen Duren is second at a distance of <strong>0.6795</strong>. His rebounding share, <strong>20.9%</strong>, sits very close to Malone's <strong>21.6%</strong>. His block rate is exactly <strong>3.0%</strong> in our dataset, matching Malone's. He plays a much more interior-focused brand of basketball than Towns, with most of his threat generated near the basket and through physical contact.</p>
+<p>He also isn't a perfect mirror. Duren's 2025–26 relative true-shooting figure of <strong>+10.7 percentage points</strong> is far above Moses's +4.7. His listed 250 lb differs significantly from the historical model's 215 lb. And even if Duren is the more satisfying stylistic parallel, neither modern player's numbers tell us that he shares Malone's elite offensive-rebound anticipation, persistence or title-level impact.</p>
+<blockquote>Towns reproduces the statistical outline. Duren offers more of the interior vocabulary.<small>Anticipate / Production versus style</small></blockquote>
+<p>Both observations can be true, and together they are more revealing than pretending the first-ranked name settles the argument.</p>
+
+<div class="tablewrap">
+<table class="compare-table">
+<thead><tr><th>Metric</th><th>Moses<br/>1982–83</th><th>Towns<br/>2025–26</th><th>Duren<br/>2025–26</th></tr></thead>
+<tbody>
+<tr><td>Points / 100</td><td>30.5</td><td>32.1</td><td>33.4</td></tr>
+<tr><td>Relative TS</td><td>+4.7 pp</td><td>+3.8 pp</td><td>+10.7 pp</td></tr>
+<tr><td>Total REB%</td><td>21.6%</td><td>21.4%</td><td>20.9%</td></tr>
+<tr><td>Usage%</td><td>26.0%</td><td>25.9%</td><td>23.6%</td></tr>
+<tr><td>Assist%</td><td>5.1%</td><td>14.7%</td><td>11.0%</td></tr>
+<tr><td>Block%</td><td>3.0%</td><td>1.8%</td><td>3.0%</td></tr>
+<tr><td>Listed height</td><td>208 cm*</td><td>213 cm</td><td>208 cm</td></tr>
+<tr><td>Listed weight</td><td>215 lb*</td><td>248 lb</td><td>250 lb</td></tr>
+</tbody></table>
+</div>
+<p class="smallnote">* Historical height and weight are the values used in the Anticipate reference CSV, not verified game-day measurements. The 76ers' current historical profile lists Malone at 6-foot-11, which differs from the 208 cm (about 6-foot-10) supplied model reference.</p>
+
+<h2 id="other"><span class="section-index">07 / THE OTHER THREE</span>What the rest of the top five reveal</h2>
+<h3>Kel'el Ware: rebounding without Malone's offensive burden</h3>
+<p>Ware is third at <strong>0.7054</strong>. His <strong>21.1% rebound share</strong> is remarkably close to Moses's, and his assist percentage of <strong>4.6%</strong> looks more like a traditional low-assist center's profile than Towns's 14.7%. His size and rim protection also fit. Yet he recorded only <strong>23.2 points per 100 possessions</strong> on <strong>18.0% usage</strong>. He did not shoulder the offensive workload that made Malone a league MVP. His perimeter shooting adds another stylistic split.</p>
+<h3>Jarrett Allen: the traditional-center argument</h3>
+<p>Allen is fourth at <strong>0.7214</strong>. A rolling, finishing, paint-oriented center with credible rim protection, he may pass the eye test more quickly than Towns in several half-court actions. He doesn't pass the production test nearly as closely. His <strong>17.2% total rebound rate</strong> and <strong>19.9% usage</strong> are meaningfully below Malone's 21.6% and 26.0%. Familiar role, different volume.</p>
+<h3>Jalen Smith: why context still matters</h3>
+<p>Smith rounds out the top five at <strong>0.8029</strong>. He meets our threshold with 1,095 minutes, but that is far less court time than the other highlighted names, and his 19.0% usage and 23.1 points per 100 are distant from the 1983 MVP's output. A player can enter the model's top five without being a convincing historical replica. In fact, ranking fifth is useful only when we explain that limitation.</p>
+
+<h2 id="sensitivity"><span class="section-index">08 / TEST THE ASSUMPTIONS</span>Change the weights. Change the winner.</h2>
+<p>Because the model assigns editorial weights, we should never present its single ranking as an inevitable truth. We recalculated the distances for all 279 modern players under two alternative settings. The exercise exposes how much any “closest match” depends on what we think matters.</p>
+<div class="weight-lab" aria-label="Interactive model weight sensitivity lab">
+<div class="eyebrow">WEIGHT SENSITIVITY / LIVE PRESET COMPARISON</div>
+<h3>Which version of the question do you want to ask?</h3>
+<p>Each setting recomputes distances for the entire 279-player pool using the same original values and standardization, then displays that setting's five closest players. Lower is closer. Scores from different weighting settings are not directly comparable as measures of quality.</p>
+<div class="preset-buttons" aria-label="Weighting options">
+<button type="button" data-preset="baseline" aria-pressed="true">Balanced</button>
+<button type="button" data-preset="scoring" aria-pressed="false">Production first</button>
+<button type="button" data-preset="build" aria-pressed="false">Size + position</button>
+</div>
+<div class="preset-meta"><span>STATS / SIZE / POSITION</span><strong id="preset-weights">70 / 20 / 10</strong></div>
+<p id="preset-note">Statistical production gets 70%; body measurements 20%; broad position group 10%. The published ranking.</p>
+<ol class="weight-list" id="preset-results">
+{rankingPresets.baseline.players.map((m,i)=><li><span>{String(i+1).padStart(2,"0")}</span>{m[0]}<span class="right">{m[1].toFixed(4)}</span></li>)}
+</ol>
+</div>
+<p><strong>The important shift:</strong> when we make the model more about height, weight and positional group, <strong>Kel'el Ware</strong> moves to number one. Under production-first weights, <strong>Karl-Anthony Towns</strong> stays first, with Duren still second. This doesn't make Ware the “real” next Moses either. It shows the conclusion depends on which version of resemblance we're asking for.</p>
+
+<h2 id="verdict"><span class="section-index">09 / THE VERDICT</span>You can match a season without matching a player</h2>
+<p>The official answer to the model's question is Karl-Anthony Towns. His scoring, usage, total rebound share and era-adjusted efficiency line up surprisingly well with Moses Malone's best championship season. It is a fair, reproducible statistical match from the eligible 2025–26 pool.</p>
+<p>The basketball argument is less settled. Duren offers a more familiar interior-oriented game; Ware has the rebounding share and center profile but not the scoring responsibility; Allen captures some traditional big-man actions but not Malone's volume. All of them overlap with part of Moses. None reproduces his particular combination of offensive rebounding obsession, interior pressure, physical endurance and championship dominance.</p>
+<p>There are also limits built into the dataset. We compare one season from each player. We ignore coaching assignments, playoff value and teammates; we don't score offensive rebounding separately, despite its central importance here; and historical listed weights can be inconsistent. Changes in the three-point line, spacing and offensive tactics make direct era-to-era comparisons imperfect even after adjusting true shooting for league average.</p>
+<p>For Moses Malone, perhaps the fairest answer is that the modern NBA has plenty of talented big men but very few who make the entire game revolve around the offensive rebound. <strong>Towns is the best answer to the model. Duren is a fascinating answer to the basketball question. Moses remains the standard.</strong></p>
+
+<h2 id="sources"><span class="section-index">SOURCES / REPRODUCIBILITY</span>Every number should lead somewhere</h2>
+<p>Historical totals and career context were checked against NBA and Basketball-Reference reporting. Modern comparison figures come from the Anticipate 2025–26 research CSV and the published season tables it references. The source model's historical values were originally supplied by the researcher; the focal 1982–83 statistical fields were cross-checked before this article, but the model as a whole has not been formally peer-reviewed. Model settings and historical listed measurements remain assumptions rather than established truths.</p>
+<ul class="source-list">
+{sources.map(s=><li><div><a href={s.url} target="_blank" rel="noopener noreferrer">{s.name}</a><small>{s.note}</small></div></li>)}
+</ul>
+</article>
+<aside></aside>
+</div>
+
+<section class="endcap">
+<div class="eyebrow">NBA TIME MACHINE / EPISODE 05</div>
+<h2>There is no next Moses. There are pieces of him.</h2>
+<p>A season can resemble another one in the box score without reproducing the way the player controlled the court. That tension is why we built the Time Machine in the first place.</p>
+<div class="action-row">
+<a class="cta" href="/series/nba-time-machine/">Explore the series</a>
+<a class="cta secondary" href="/research/larry-bird-time-machine/">Previous: Larry Bird</a>
+<a class="cta secondary" href="https://github.com/mudia-OE/anticipate-nba-time-machine" target="_blank" rel="noopener noreferrer">See the model</a>
+</div>
+</section>
+</main>
+<footer class="footer">
+<div><a class="logo" href="/">ANTICIPATE<b>.</b></a><p>Original basketball research. Statistics in context.</p></div>
+<nav class="footlinks"><a href="/">Home</a><a href="/series/nba-time-machine/">All episodes</a><a href="#article-title">Back to top</a></nav>
+</footer>
+</div>
+<script type="application/json" id="research-data" set:html={labDataJson}></script>
+<script is:inline>
+(function(){
+  const el = document.getElementById("research-data");
+  if (!el) return;
+  let data;
+  try { data=JSON.parse(el.textContent); } catch(_e) { return; }
+  const axes=data.axes;
+  const polar=(i,n,d)=>({x:240+Math.cos(-Math.PI/2+2*Math.PI*i/n)*d,y:211+Math.sin(-Math.PI/2+2*Math.PI*i/n)*d});
+  const points=p=>axes.map((a,i)=>{const v=Math.max(0,Math.min(1,(Number(p[a.key])-a.min)/(a.max-a.min)));const q=polar(i,axes.length,132*v);return q.x.toFixed(1)+","+q.y.toFixed(1)}).join(" ");
+  const valueList=document.getElementById("lab-values");
+  const polygon=document.getElementById("peer-polygon");
+  const radar=document.querySelector(".radar-svg");
+  document.querySelectorAll("[data-player-index]").forEach(button=>button.addEventListener("click",()=>{
+    const index=Number(button.getAttribute("data-player-index"));
+    const p=data.matches[index];
+    if(!p)return;
+    document.querySelectorAll("[data-player-index]").forEach(b=>b.setAttribute("aria-pressed",b===button?"true":"false"));
+    polygon.setAttribute("points",points(p));
+    document.getElementById("lab-name").textContent=p.name;
+    document.getElementById("legend-player").textContent=p.name;
+    document.getElementById("lab-description").textContent=p.description;
+    radar.setAttribute("aria-label","Statistical radar chart comparing Moses Malone with "+p.name);
+    valueList.textContent="";
+    axes.forEach(a=>{
+      const div=document.createElement("div"),dt=document.createElement("dt"),dd=document.createElement("dd"),strong=document.createElement("strong");
+      dt.textContent=a.label;strong.textContent=Number(data.moses[a.key]).toFixed(1);dd.append(strong,document.createTextNode(" / "+Number(p[a.key]).toFixed(1)));div.append(dt,dd);valueList.append(div);
+    });
+  }));
+  const presetResults=document.getElementById("preset-results");
+  document.querySelectorAll("[data-preset]").forEach(button=>button.addEventListener("click",()=>{
+    const key=button.getAttribute("data-preset");
+    const preset=data.rankingPresets[key];
+    if(!preset)return;
+    document.querySelectorAll("[data-preset]").forEach(b=>b.setAttribute("aria-pressed",b===button?"true":"false"));
+    document.getElementById("preset-weights").textContent=preset.weights;
+    document.getElementById("preset-note").textContent=preset.note;
+    presetResults.textContent="";
+    preset.players.forEach((entry,i)=>{
+      const li=document.createElement("li"),rank=document.createElement("span"),score=document.createElement("span");
+      rank.textContent=String(i+1).padStart(2,"0");score.textContent=Number(entry[1]).toFixed(4);score.className="right";
+      li.append(rank,document.createTextNode(entry[0]),score);presetResults.append(li);
+    });
+  }));
+})();
+</script>
+</body>
+</html>
