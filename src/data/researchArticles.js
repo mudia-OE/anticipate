@@ -10,6 +10,17 @@
  */
 export const researchArticles = [
   {
+    id: "moses-malone",
+    category: "NBA TIME MACHINE",
+    episode: "05",
+    publishedAt: "2026-11-04",
+    title: "We Tried to Find the Next Moses Malone",
+    headlineLead: "We Tried to Find the Next ",
+    headlineAccent: "Moses Malone.",
+    description: "Karl-Anthony Towns leads the model; Jalen Duren offers an interior argument. Explore five matches and interactive radar and weight tests.",
+    href: "/research/moses-malone-time-machine/",
+  },
+  {
     id: "larry-bird",
     category: "NBA TIME MACHINE",
     episode: "04",
