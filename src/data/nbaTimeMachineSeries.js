@@ -6,7 +6,7 @@ export const nbaTimeMachineEpisodes = [
   { number: "03", name: "Charles Barkley", season: "1986–87", status: "published", href: "/research/charles-barkley-time-machine/", teaser: "An undersized forward who led the league in rebounding. Four center matches and a deeper look at how he dominated the glass." },
   { number: "04", name: "Larry Bird", season: "1984–85", status: "published", href: "/research/larry-bird-time-machine/", teaser: "The model picks Michael Porter Jr. over Jalen Johnson. Explore the closest five, the stylistic debate and our interactive comparison lab." },
   { number: "05", name: "Moses Malone", season: "1982–83", status: "published", href: "/research/moses-malone-time-machine/", teaser: "The model selects Karl-Anthony Towns over Jalen Duren. Five modern comparisons and an interactive seven-metric radar." },
-  { number: "06", name: "Hakeem Olajuwon", season: "1992–93", status: "published", href: "/research/hakeem-olajuwon-time-machine/", teaser: "Victor Wembanyama narrowly leads Jaren Jackson Jr., while Alperen Şengün makes the Dream Shake argument. Five matches and an interactive radar." },
+  { number: "06", name: "Hakeem Olajuwon", season: "1992–93", status: "published", href: "/research/hakeem-olajuwon-time-machine/", teaser: "279 players enter the model. Five emerge as the closest matches. But can the numbers capture the defender, the footwork and the Dream Shake?" },
   { number: "07", name: "Magic Johnson", season: "1986–87", status: "locked" },
   { number: "08", name: "Shaquille O'Neal", season: "1999–00", status: "locked" },
   { number: "09", name: "Kareem Abdul-Jabbar", season: "1976–77", status: "locked" },
