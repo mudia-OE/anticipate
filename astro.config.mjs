@@ -5,19 +5,19 @@ import { researchArticles } from './src/data/researchArticles.js';
 
 // Astro discovers every published static route automatically, including the
 // homepage, series landing page and all research articles. The research registry
-// is the source of truth for known article publication dates.
+// is the source of truth for publication dates and subsequent editorial updates.
 const datedResearch = researchArticles.filter((article) =>
-  article.publishedAt && article.href?.startsWith('/research/')
+  (article.updatedAt || article.publishedAt) && article.href?.startsWith('/research/')
 );
 const latestResearchDate = datedResearch
-  .map((article) => article.publishedAt)
+  .map((article) => article.updatedAt ?? article.publishedAt)
   .sort()
   .at(-1);
 
 const pageLastModified = new Map([
   ['/', latestResearchDate ?? '2026-10-28'],
   ['/series/nba-time-machine/', latestResearchDate ?? '2026-10-28'],
-  ...datedResearch.map((article) => [article.href, article.publishedAt]),
+  ...datedResearch.map((article) => [article.href, article.updatedAt ?? article.publishedAt]),
 ]);
 
 // Pages without a confirmed publication or editorial-update date (such as the
