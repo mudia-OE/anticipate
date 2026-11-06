@@ -17,7 +17,7 @@ export const researchArticles = [
     title: "We Tried to Find the Next Hakeem Olajuwon",
     headlineLead: "We Tried to Find the Next ",
     headlineAccent: "Hakeem Olajuwon.",
-    description: "Victor Wembanyama narrowly tops Jaren Jackson Jr. in our Hakeem investigation, while Alperen Şengün makes the offensive-style case. Explore five matches and an interactive radar.",
+    description: "We compared Hakeem Olajuwon’s legendary 1992–93 season to 279 modern players. Five compelling matches, one difficult question: who comes closest to the Dream?",
     href: "/research/hakeem-olajuwon-time-machine/",
   },
   {
