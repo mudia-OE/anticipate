@@ -10,6 +10,17 @@
  */
 export const researchArticles = [
   {
+    id: "hakeem-olajuwon",
+    category: "NBA TIME MACHINE",
+    episode: "06",
+    publishedAt: "2026-11-06",
+    title: "We Tried to Find the Next Hakeem Olajuwon",
+    headlineLead: "We Tried to Find the Next ",
+    headlineAccent: "Hakeem Olajuwon.",
+    description: "Victor Wembanyama narrowly tops Jaren Jackson Jr. in our Hakeem investigation, while Alperen Şengün makes the offensive-style case. Explore five matches and an interactive radar.",
+    href: "/research/hakeem-olajuwon-time-machine/",
+  },
+  {
     id: "moses-malone",
     category: "NBA TIME MACHINE",
     episode: "05",
