@@ -10,6 +10,17 @@
  */
 export const researchArticles = [
   {
+    id: "magic-johnson",
+    category: "NBA TIME MACHINE",
+    episode: "07",
+    publishedAt: "2026-11-08",
+    title: "We Tried to Find the Next Magic Johnson",
+    headlineLead: "We Tried to Find the Next ",
+    headlineAccent: "Magic Johnson.",
+    description: "6-foot-9. Twelve assists a night. We compared Magic Johnson's 1986–87 MVP season to 279 modern NBA players to find five surprising matches.",
+    href: "/research/magic-johnson-time-machine/",
+  },
+  {
     id: "hakeem-olajuwon",
     category: "NBA TIME MACHINE",
     episode: "06",
