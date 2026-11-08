@@ -12,7 +12,17 @@ const sources=[["NBA: 1986–87 season review","https://www.nba.com/news/history
 const point=(i,n,d)=>({x:240+Math.cos(-Math.PI/2+2*Math.PI*i/n)*d,y:211+Math.sin(-Math.PI/2+2*Math.PI*i/n)*d});
 const polygon=p=>axes.map((a,i)=>{const f=Math.max(0,Math.min(1,(p[a.key]-a.min)/(a.max-a.min)));const q=point(i,axes.length,132*f);return q.x.toFixed(1)+","+q.y.toFixed(1)}).join(" ");
 const ring=f=>axes.map((a,i)=>{const q=point(i,axes.length,132*f);return q.x.toFixed(1)+","+q.y.toFixed(1)}).join(" ");
-const labData=JSON.stringify({magic,matches,axes});
+// Only height and weight are measured. Mirroring these spokes makes a readable
+// four-point radar without suggesting the model contains extra physical traits.
+const physicalAxes=[
+  {key:"height",label:"HEIGHT",min:175,max:220},
+  {key:"weight",label:"WEIGHT",min:170,max:270},
+  {key:"height",label:"HEIGHT",min:175,max:220},
+  {key:"weight",label:"WEIGHT",min:170,max:270}
+];
+const physicalPolygon=p=>physicalAxes.map((a,i)=>{const f=Math.max(0,Math.min(1,(p[a.key]-a.min)/(a.max-a.min)));const q=point(i,physicalAxes.length,132*f);return q.x.toFixed(1)+","+q.y.toFixed(1)}).join(" ");
+const physicalRing=f=>physicalAxes.map((a,i)=>{const q=point(i,physicalAxes.length,132*f);return q.x.toFixed(1)+","+q.y.toFixed(1)}).join(" ");
+const labData=JSON.stringify({magic,matches,axes,physicalAxes});
 ---
 <!doctype html>
 <html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -33,7 +43,7 @@ const labData=JSON.stringify({magic,matches,axes});
 .toc{position:sticky;top:24px;border-top:3px solid var(--lime);padding:20px 0 25px}.toc h3{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--lime);margin:0 0 18px}.toc a{display:block;text-decoration:none;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px;line-height:1.5;color:#b9c0b3}.toc a:hover{color:var(--lime)}.toc .recirc{padding:18px 15px;margin-top:30px;background:var(--panel);border:1px solid var(--line);font-size:12px;line-height:1.6;color:var(--muted)}.toc .recirc b{display:block;color:var(--ink);font-size:15px;margin:5px 0}
 .research-unit{background:var(--panel);border:1px solid var(--line);padding:26px;margin:32px 0}.research-unit .smallcaps{display:block;color:var(--teal);margin-bottom:13px}.research-unit p:last-child{margin-bottom:0}.formula{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px!important;line-height:1.7!important;overflow-wrap:anywhere;color:var(--lime)!important}
 .fullbleed{margin:62px 0 55px;padding:32px;border:1px solid #424a3b;background:linear-gradient(142deg,#1c2219,#191c19)}.fullbleed h2{margin:0 0 10px;letter-spacing:-1.4px;font-size:clamp(28px,3vw,40px);line-height:1.15}.fullbleed .intro{color:var(--muted);max-width:740px;font-size:15px}.ranking-list{display:grid;gap:10px;margin-top:25px}.rank-row{display:grid;grid-template-columns:36px minmax(0,1fr) 72px;align-items:center;gap:16px;padding:16px 20px;border:1px solid var(--line);background:rgba(12,15,11,.45)}.rank-row:first-child{border-color:#8a9f56;background:rgba(212,255,69,.07)}.rankno{font-size:24px;font-weight:900;letter-spacing:-1px;color:var(--lime)}.rank-row h3{margin:0 0 4px;font-size:19px;line-height:1.3}.rank-row p{margin:0;color:var(--muted);font-size:11px;line-height:1.4;letter-spacing:1px}.distance{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:900;font-size:20px}.smallnote{font-size:12px;color:var(--muted);line-height:1.7}
-.radar-lab{background:var(--panel);border:1px solid #536044;padding:29px;margin:32px 0}.radar-lab h3{font-size:25px;margin:0 0 9px;line-height:1.2}.radar-lab>p{color:var(--muted);font-size:13px}.compare-buttons{display:flex;flex-wrap:wrap;gap:7px;margin:22px 0 12px}.compare-buttons button{border:1px solid #51594b;background:#232820;color:#d5dacf;padding:10px 13px;font-size:12px;font-weight:800}.compare-buttons button[aria-pressed="true"]{border-color:var(--lime);background:var(--lime);color:#151810}.radar-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.83fr);gap:14px;align-items:center}.radar-svg{width:100%;height:auto;display:block;overflow:visible}.radar-svg .ring{fill:none;stroke:#525e4f;stroke-width:.75}.radar-svg .spoke{stroke:#475043;stroke-width:1}.radar-svg .label{fill:#cdd8c7;font-size:11px;font-weight:800;letter-spacing:.45px;dominant-baseline:middle;text-anchor:middle}.radar-svg .moses-shape{fill:rgba(212,255,69,.16);stroke:var(--lime);stroke-width:2.8}.radar-svg .peer-shape{fill:rgba(130,210,195,.20);stroke:var(--teal);stroke-width:2.8}.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin:8px 0 0}.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:10px;height:10px;display:inline-block;background:var(--lime)}.legend i.teal{background:var(--teal)}.radar-side{min-width:0}.radar-side h4{font-size:22px;letter-spacing:-.5px;margin:10px 0;line-height:1.2}.radar-side p{color:#c4d0c5;font-size:13px;line-height:1.75;margin-bottom:16px}.radar-side .note{font-size:11px;color:var(--muted)}.value-list{margin:14px 0}.value-list div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:8px 0;font-size:12px}.value-list dt{color:#b4beae}.value-list dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}.value-list strong{color:var(--lime)}
+.radar-lab{background:var(--panel);border:1px solid #536044;padding:29px;margin:32px 0}.radar-lab h3{font-size:25px;margin:0 0 9px;line-height:1.2}.radar-lab>p{color:var(--muted);font-size:13px}.compare-buttons{display:flex;flex-wrap:wrap;gap:7px;margin:22px 0 12px}.compare-buttons button{border:1px solid #51594b;background:#232820;color:#d5dacf;padding:10px 13px;font-size:12px;font-weight:800}.compare-buttons button[aria-pressed="true"]{border-color:var(--lime);background:var(--lime);color:#151810}.radar-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.83fr);gap:14px;align-items:center}.radar-svg{width:100%;height:auto;display:block;overflow:visible}.radar-svg .ring{fill:none;stroke:#525e4f;stroke-width:.75}.radar-svg .spoke{stroke:#475043;stroke-width:1}.radar-svg .label{fill:#cdd8c7;font-size:11px;font-weight:800;letter-spacing:.45px;dominant-baseline:middle;text-anchor:middle}.radar-svg .moses-shape{fill:rgba(212,255,69,.16);stroke:var(--lime);stroke-width:2.8}.radar-svg .peer-shape{fill:rgba(130,210,195,.20);stroke:var(--teal);stroke-width:2.8}.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin:8px 0 0}.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:10px;height:10px;display:inline-block;background:var(--lime)}.legend i.teal{background:var(--teal)}.radar-side{min-width:0}.radar-side h4{font-size:22px;letter-spacing:-.5px;margin:10px 0;line-height:1.2}.radar-side p{color:#c4d0c5;font-size:13px;line-height:1.75;margin-bottom:16px}.radar-side .note{font-size:11px;color:var(--muted)}.value-list{margin:14px 0}.value-list div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:8px 0;font-size:12px}.value-list dt{color:#b4beae}.value-list dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}.value-list strong{color:var(--lime)}.physical-lab{margin-top:-9px;border-color:#49584e;background:linear-gradient(145deg,#1d2420,#1c1e19)}.physical-lab h3{margin:0 0 12px}.physical-lab .radar-inner{margin-top:15px}.physical-note{font-size:11px!important;color:var(--muted)!important;line-height:1.7!important;margin:12px 0 0!important}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);margin:28px 0 14px}.compare-table{width:100%;border-collapse:collapse;min-width:580px;text-align:left;font-variant-numeric:tabular-nums}.compare-table th,.compare-table td{padding:14px 12px;border-bottom:1px solid var(--line);font-size:12px;white-space:nowrap}.compare-table thead{background:#30362b}.compare-table th{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--lime)}.compare-table tr:last-child td{border:0}.compare-table td:first-child{font-weight:800}
 .source-list{padding:0;margin:25px 0;list-style:none;counter-reset:source}.source-list li{display:grid;grid-template-columns:27px 1fr;gap:8px;border-bottom:1px solid var(--line);padding:13px 0;counter-increment:source}.source-list li:before{content:counter(source,decimal-leading-zero);font-size:11px;color:var(--lime);font-weight:900;letter-spacing:.5px}.source-list a{font-weight:800}.source-list small{display:block;color:var(--muted);font-size:12px;line-height:1.7;margin-top:5px}
 .endcap{background:linear-gradient(130deg,#26311e,#151a15);border:1px solid #54613e;margin:62px 0 15px;padding:36px}.endcap .eyebrow{margin-bottom:12px}.endcap h2{font-size:clamp(27px,3vw,40px);letter-spacing:-1px;line-height:1.15;margin:0 0 14px}.endcap p{color:#c9d4c0;max-width:760px}.action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:23px}.cta{display:inline-flex;padding:12px 17px;align-items:center;justify-content:center;background:var(--lime);color:#11140f!important;text-decoration:none;font-weight:900;font-size:12px;letter-spacing:.7px;border:1px solid var(--lime)}.cta.secondary{background:transparent;color:var(--ink)!important;border-color:#818c74}.footer{border-top:1px solid var(--line);margin:60px 0 0;padding:35px 0 65px;display:flex;justify-content:space-between;gap:22px}.footer p{font-size:12px;color:var(--muted);margin-top:10px}.footlinks{display:flex;flex-wrap:wrap;gap:23px;font-size:12px;align-items:flex-start;color:var(--muted)}.footlinks a{text-decoration:none}
@@ -54,7 +64,7 @@ const labData=JSON.stringify({magic,matches,axes});
 {sections.slice(0,4).map(s=><section aria-labelledby={s.id}><h2 id={s.id}><span class="section-index">{s.n} / {s.tag}</span>{s.title}</h2>{s.paras.map((p,i)=><p class={i===0&&s.n==="01"?"lead":"story-p"} set:html={p}/>)}</section>)}
 </article><aside class="toc" aria-label="Article navigation"><h3>Inside the investigation</h3>
 {sections.map(s=><a href={"#"+s.id}>{s.n} — {s.title}</a>)}
-<a href="#radar">05 — Interactive comparison</a><a href="#sources">Sources and research</a>
+<a href="#radar">05 — Interactive comparison</a><a href="#physical-radar">05 — Physical comparison</a><a href="#sources">Sources and research</a>
 <div class="recirc">NEXT IN THE SERIES<b>Shaquille O'Neal</b>Episode 08 / 1999–00 / Coming soon</div>
 </aside></div>
 <section class="fullbleed" aria-label="Magic Johnson modern model matches">
@@ -65,7 +75,7 @@ const labData=JSON.stringify({magic,matches,axes});
 </section>
 <div class="story-grid"><article class="article">
 <h2 id="radar"><span class="section-index">05 / INTERACTIVE MATCHUP</span>What does Magic actually share with these five?</h2>
-<p>Select a current player to compare seven important season-level rates with Magic's 1986–87 profile. The radar chart keeps every axis fixed when switching players. Exact values remain visible, so you can see the trade-offs behind the shape.</p>
+<p>Select a current player to compare seven important season-level rates with Magic's 1986–87 profile. The statistical radar keeps every axis fixed when switching players. Below it, a linked physical radar compares listed height and weight. Exact values remain visible so you can see the trade-offs behind both shapes.</p>
 <div class="radar-lab"><div class="eyebrow">ANTICIPATE / THE COMPARISON LAB</div><h3>One historic guard. Five modern possibilities.</h3><p>Lime represents Magic Johnson. Teal represents the chosen modern player.</p>
 <div class="compare-buttons" aria-label="Select comparison">{matches.map((p,i)=><button type="button" data-player-index={i} aria-pressed={i===0?"true":"false"}>{p.name}</button>)}</div>
 <div class="radar-inner"><div><svg class="radar-svg" viewBox="0 0 480 440" role="img" aria-label="Radar comparing Magic Johnson with James Harden">
@@ -78,6 +88,34 @@ const labData=JSON.stringify({magic,matches,axes});
 <dl class="value-list" id="peer-values">{axes.map(a=><div><dt>{a.label}</dt><dd><strong>{magic[a.key].toFixed(1)}</strong> / {matches[0][a.key].toFixed(1)}</dd></div>)}</dl>
 <p class="note">Each pair reads Magic / selected player. rTS is true-shooting percentage points above or below the player's league average. The full model includes height, weight and broad position.</p>
 </div></div></div>
+
+<div class="radar-lab physical-lab" id="physical-radar">
+  <div class="eyebrow">ANTICIPATE / PHYSICAL COMPARISON</div>
+  <h3>Height and weight, side by side.</h3>
+  <p>The player selected above also appears here. This radar shows the only two measured physical variables used by the model: listed height and weight.</p>
+  <div class="radar-inner">
+    <div>
+      <svg class="radar-svg" id="physical-radar-svg" viewBox="0 0 480 440" role="img" aria-label="Physical radar comparing Magic Johnson with James Harden">
+        {[.25,.5,.75,1].map(f=><polygon class="ring" points={physicalRing(f)}/>)}
+        {physicalAxes.map((a,i)=>{const q=point(i,physicalAxes.length,132);return <line class="spoke" x1="240" y1="211" x2={q.x} y2={q.y}/>;})}
+        <polygon class="moses-shape" points={physicalPolygon(magic)}/>
+        <polygon class="peer-shape" id="physical-peer-polygon" points={physicalPolygon(matches[0])}/>
+        {physicalAxes.map((a,i)=>{const q=point(i,physicalAxes.length,174);return <text class="label" x={q.x} y={q.y}>{a.label}</text>;})}
+      </svg>
+      <div class="legend"><span><i></i>Magic (1986–87)</span><span><i class="teal"></i><span id="physical-legend-name">James Harden</span> (2025–26)</span></div>
+    </div>
+    <div class="radar-side" aria-live="polite">
+      <div class="eyebrow">LISTED MEASUREMENTS</div>
+      <h4 id="physical-peer-name">James Harden</h4>
+      <dl class="value-list" id="physical-values">
+        <div><dt>HEIGHT</dt><dd><strong>{magic.height} cm</strong> / {matches[0].height} cm</dd></div>
+        <div><dt>WEIGHT</dt><dd><strong>{magic.weight} lb</strong> / {matches[0].weight} lb</dd></div>
+      </dl>
+      <p class="note">Each pair reads Magic / selected player. Height and weight contribute to the physical portion of the model (20%); position is scored separately (10%).</p>
+      <p class="physical-note">Only two independent measures are shown. Each is mirrored across opposite spokes to create a four-point radar. Fixed display scales: height 175–220 cm and weight 170–270 lb. The chart does not measure wingspan, speed, strength or athleticism.</p>
+    </div>
+  </div>
+</div>
 <div class="details-callout"><strong>What this cannot show:</strong> transition timing, passing creativity, speed of decision-making, pace and the different shot diets of 1987 and 2026. The distance describes measured production, not identical basketball.</div>
 {sections.slice(4).map(s=><section aria-labelledby={s.id}><h2 id={s.id}><span class="section-index">{s.n} / {s.tag}</span>{s.title}</h2>{s.paras.map(p=><p class="story-p" set:html={p}/>)}</section>)}
 <h2 id="sources"><span class="section-index">SOURCES / METHODOLOGY</span>Where the numbers come from</h2>
@@ -93,11 +131,16 @@ const el=document.getElementById("lab-data");if(!el)return;
 let data;try{data=JSON.parse(el.textContent)}catch(_e){return}
 const polar=(i,n,d)=>({x:240+Math.cos(-Math.PI/2+2*Math.PI*i/n)*d,y:211+Math.sin(-Math.PI/2+2*Math.PI*i/n)*d});
 const shape=p=>data.axes.map((a,i)=>{const f=Math.max(0,Math.min(1,(p[a.key]-a.min)/(a.max-a.min)));const q=polar(i,data.axes.length,132*f);return q.x.toFixed(1)+","+q.y.toFixed(1)}).join(" ");
+const physicalShape=p=>data.physicalAxes.map((a,i)=>{const f=Math.max(0,Math.min(1,(p[a.key]-a.min)/(a.max-a.min)));const q=polar(i,data.physicalAxes.length,132*f);return q.x.toFixed(1)+","+q.y.toFixed(1)}).join(" ");
+const physicalChart=document.getElementById("physical-radar-svg"),physicalPeer=document.getElementById("physical-peer-polygon"),physicalValues=document.getElementById("physical-values");
 const values=document.getElementById("peer-values"),chart=document.querySelector(".radar-svg"),polygon=document.getElementById("peer-polygon");
 document.querySelectorAll("[data-player-index]").forEach(b=>b.addEventListener("click",()=>{
 const p=data.matches[Number(b.getAttribute("data-player-index"))];if(!p)return;
 document.querySelectorAll("[data-player-index]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
 polygon.setAttribute("points",shape(p));chart.setAttribute("aria-label","Statistical radar comparing Magic Johnson with "+p.name);
+physicalPeer.setAttribute("points",physicalShape(p));physicalChart.setAttribute("aria-label","Physical radar comparing Magic Johnson with "+p.name);
+document.getElementById("physical-peer-name").textContent=p.name;document.getElementById("physical-legend-name").textContent=p.name;
+physicalValues.textContent="";[{key:"height",label:"HEIGHT",unit:"cm"},{key:"weight",label:"WEIGHT",unit:"lb"}].forEach(a=>{const d=document.createElement("div"),dt=document.createElement("dt"),dd=document.createElement("dd"),strong=document.createElement("strong");dt.textContent=a.label;strong.textContent=data.magic[a.key]+" "+a.unit;dd.append(strong,document.createTextNode(" / "+p[a.key]+" "+a.unit));d.append(dt,dd);physicalValues.append(d);});
 document.getElementById("peer-name").textContent=p.name;document.getElementById("legend-name").textContent=p.name;document.getElementById("peer-description").textContent=p.description;
 values.textContent="";data.axes.forEach(a=>{const d=document.createElement("div"),dt=document.createElement("dt"),dd=document.createElement("dd"),strong=document.createElement("strong");dt.textContent=a.label;strong.textContent=Number(data.magic[a.key]).toFixed(1);dd.append(strong,document.createTextNode(" / "+Number(p[a.key]).toFixed(1)));d.append(dt,dd);values.append(d);});
 }));
