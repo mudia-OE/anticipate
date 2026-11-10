@@ -25,6 +25,7 @@ export const researchArticles = [
     category: "NBA TIME MACHINE",
     episode: "07",
     publishedAt: "2026-11-08",
+    updatedAt: "2026-11-10",
     title: "We Tried to Find the Next Magic Johnson",
     headlineLead: "We Tried to Find the Next ",
     headlineAccent: "Magic Johnson.",
