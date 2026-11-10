@@ -10,6 +10,17 @@
  */
 export const researchArticles = [
   {
+    id: "shaquille-oneal",
+    category: "NBA TIME MACHINE",
+    episode: "08",
+    publishedAt: "2026-11-10",
+    title: "We Tried to Find the Next Shaquille O'Neal. The NBA May Not Have One.",
+    headlineLead: "We Tried to Find the Next Shaquille O'Neal. ",
+    headlineAccent: "The NBA May Not Have One.",
+    description: "Shaq's 1999–00 MVP season met 279 modern NBA players. Joel Embiid led the matches, but no one reproduced his 325-pound profile.",
+    href: "/research/shaquille-oneal-time-machine/",
+  },
+  {
     id: "magic-johnson",
     category: "NBA TIME MACHINE",
     episode: "07",
